@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-xl space-y-4">
+  <a href="{% url 'administrar_llamadas' %}" class="inline-flex min-h-12 items-center text-base font-bold text-brand-header">← Volver al inicio</a>
+  <article class="space-y-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <h1 class="text-2xl font-extrabold text-brand-navy">{{ titulo }}</h1>
+    <p class="text-lg leading-relaxed text-slate-700">{{ descripcion }}</p>
+  </article>
+</section>
+{% endblock %}

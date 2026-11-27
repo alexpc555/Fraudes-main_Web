@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Procesar audio{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-6 mx-auto">
+    <div class="card shadow-sm border-0 rounded-4">
+      <div class="card-body p-4">
+        <h2 class="h3 fw-bold mb-3">Procesar audio de llamada</h2>
+        <p class="text-muted">La llamada <strong>{{ llamada.identificador }}</strong> se revisará con el motor de voz a texto. El texto resultante se guardará asociado a la llamada.</p>
+
+        <form method="post" enctype="multipart/form-data"> 
+          {% csrf_token %}
+          {% for field in form %}
+            <div class="mb-3">
+              <label for="{{ field.id_for_label }}" class="form-label fw-semibold">{{ field.label }}</label>
+              {{ field }}
+              {% if field.help_text %}
+                <div class="form-text">{{ field.help_text }}</div>
+              {% endif %}
+              {% if field.errors %}
+                <div class="text-danger small mt-1">{{ field.errors|join:', ' }}</div>
+              {% endif %}
+            </div>
+          {% endfor %}
+
+          <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-primary">Procesar audio</button>
+            <a href="{% url 'detalle_llamada' pk=llamada.pk %}" class="btn btn-outline-secondary">Cancelar</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

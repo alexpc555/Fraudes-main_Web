@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Registrar llamada{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-6">
+    <div class="card shadow-sm border-0 rounded-4">
+      <div class="card-body p-4">
+        <h2 class="h3 fw-bold mb-3">Registrar llamada entrante</h2>
+        <p class="text-muted mb-4">Registra una llamada para consultar antecedentes y revisar su evaluación de riesgo.</p>
+        <a href="{% url 'ayuda_tema' tema='proteccion-llamadas' %}?volver={{ request.get_full_path|urlencode }}" class="mb-3 inline-flex min-h-12 items-center text-base font-bold text-brand-header">Ayuda sobre protección de llamadas</a>
+
+        <form method="post">
+          {% csrf_token %}
+          {% if form.non_field_errors %}<div role="alert" class="mb-3 rounded-xl bg-red-50 p-3 text-sm text-red-800">{{ form.non_field_errors }}</div>{% endif %}
+          {% if seleccion_multiple %}
+            <div class="mb-3">
+              <label for="adulto_mayor_id" class="form-label">Dispositivo del Adulto mayor</label>
+              <select id="adulto_mayor_id" name="adulto_mayor_id" required class="w-full min-h-12 rounded-xl border border-slate-300 p-3 text-base">
+                <option value="">Selecciona un perfil autorizado</option>
+                {% for adulto in adultos_autorizados %}<option value="{{ adulto.pk }}">{{ adulto.get_full_name|default:adulto.username }}</option>{% endfor %}
+              </select>
+            </div>
+          {% endif %}
+          <div class="mb-3">
+            <label for="id_numero_telefonico" class="form-label">Número telefónico</label>
+            {{ form.numero_telefonico }}
+            {% if form.numero_telefonico.errors %}
+              <div class="text-danger small mt-2">{{ form.numero_telefonico.errors|join:', ' }}</div>
+            {% endif %}
+          </div>
+          <button type="submit" class="btn btn-primary px-4">Registrar</button>
+          <a href="{% url 'administrar_llamadas' %}" class="btn btn-outline-secondary ms-2">Volver</a>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

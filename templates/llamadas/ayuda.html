@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Ayuda{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-xl space-y-4 pb-4">
+  <a href="{{ volver }}" class="inline-flex min-h-14 items-center rounded-xl px-2 text-lg font-bold text-brand-header">← Regresar</a>
+  <header class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <p class="text-sm font-bold uppercase tracking-wide text-brand-header">Asistente Antifraude Telefónico</p>
+    <h1 class="mt-1 text-3xl font-extrabold text-brand-navy">Ayuda</h1>
+    <p class="mt-2 text-base leading-relaxed text-slate-700">Elige un tema para consultar instrucciones sencillas.</p>
+  </header>
+  {% if error_tema %}<p role="alert" class="rounded-xl border border-amber-300 bg-amber-50 p-4 text-base font-semibold text-amber-900">{{ error_tema }}</p>{% endif %}
+  <nav aria-label="Temas de ayuda" class="space-y-2">
+    {% for tema in temas %}
+      <a href="{% url 'ayuda_tema' tema=tema.slug %}{% if volver %}?volver={{ volver|urlencode }}{% endif %}" class="flex min-h-16 items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-brand-header">
+        <span class="block">
+          <span class="block text-lg font-bold text-slate-900">{{ forloop.counter }}. {{ tema.titulo }}</span>
+          <span class="mt-1 block text-sm leading-relaxed text-slate-600">{{ tema.resumen }}</span>
+        </span>
+        <span aria-hidden="true" class="shrink-0 text-2xl font-bold text-brand-header">›</span>
+      </a>
+    {% endfor %}
+  </nav>
+</section>
+{% endblock %}

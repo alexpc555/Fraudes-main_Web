@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}Pantalla movil{% endblock %}
+
+{% block content %}
+<section class="space-y-4 pt-1">
+  <h1 class="px-1 text-2xl font-black text-brand-header">Pantalla movil</h1>
+
+  <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+    <p class="text-sm text-slate-600 leading-relaxed">
+      Deja esta pantalla abierta para consultar la llamada más reciente que hayas registrado.
+    </p>
+  </div>
+
+  <div id="espera-card" class="bg-brand-lightBlue rounded-2xl p-4 border border-brand-accent/20">
+    <p class="text-sm font-bold text-brand-dark">Esperando una llamada registrada...</p>
+    <p class="text-xs text-brand-dark/80 mt-1">La página se actualiza automáticamente cada 2 segundos.</p>
+  </div>
+
+  <div id="llamada-card" class="hidden bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3">
+    <div>
+      <p class="text-xs uppercase tracking-wide text-slate-500">Llamada detectada</p>
+      <p id="llamada-numero" class="text-lg font-black text-brand-header mt-1"></p>
+      <p id="llamada-estado" class="text-xs text-slate-600"></p>
+    </div>
+
+    <div class="grid grid-cols-1 gap-2">
+      <a id="btn-alerta" href="#" class="w-full bg-brand-header hover:bg-brand-primary text-white font-medium text-sm py-3 px-4 rounded-2xl text-center">Abrir alerta de riesgo</a>
+      <a id="btn-analisis" href="#" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-medium text-sm py-3 px-4 rounded-2xl text-center">Ver analisis IA</a>
+    </div>
+
+    <label class="flex items-center space-x-2 text-xs text-slate-600">
+      <input id="auto-open" type="checkbox" checked class="rounded border-slate-300" />
+      <span>Abrir alerta automaticamente al detectar llamada</span>
+    </label>
+  </div>
+</section>
+
+<script>
+  (function () {
+    let ultimaLlamadaId = null;
+
+    const esperaCard = document.getElementById('espera-card');
+    const llamadaCard = document.getElementById('llamada-card');
+    const numeroEl = document.getElementById('llamada-numero');
+    const estadoEl = document.getElementById('llamada-estado');
+    const btnAlerta = document.getElementById('btn-alerta');
+    const btnAnalisis = document.getElementById('btn-analisis');
+    const autoOpen = document.getElementById('auto-open');
+
+    async function refrescarEstado() {
+      try {
+        const response = await fetch('{% url "estado_pantalla_movil" %}', { cache: 'no-store' });
+        if (!response.ok) return;
+        const data = await response.json();
+
+        if (!data.activa) {
+          esperaCard.classList.remove('hidden');
+          llamadaCard.classList.add('hidden');
+          return;
+        }
+
+        esperaCard.classList.add('hidden');
+        llamadaCard.classList.remove('hidden');
+
+        numeroEl.textContent = data.numero_telefonico + ' (' + data.identificador + ')';
+        estadoEl.textContent = 'Estado: ' + data.estado_display;
+        btnAlerta.href = data.alerta_url;
+        btnAnalisis.href = data.analisis_url;
+
+        const esNueva = ultimaLlamadaId !== data.id;
+        if (esNueva) {
+          ultimaLlamadaId = data.id;
+          if (autoOpen.checked) {
+            window.location.href = data.alerta_url;
+          }
+        }
+      } catch (error) {
+        console.error('No se pudo actualizar estado movil', error);
+      }
+    }
+
+    refrescarEstado();
+    setInterval(refrescarEstado, 2000);
+  })();
+</script>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Familiar de confianza{% endblock %}
+
+{% block content %}
+<section class="mx-auto max-w-xl space-y-4">
+  <a href="{% url 'administrar_llamadas' %}" class="inline-flex min-h-12 items-center gap-2 text-base font-bold text-brand-header">← Volver al inicio</a>
+  <header class="rounded-2xl border border-blue-200 bg-blue-50 p-5">
+    <p class="text-sm font-bold uppercase tracking-wide text-brand-header">Función opcional</p>
+    <h1 class="mt-1 text-2xl font-extrabold text-brand-navy">Familiar de confianza</h1>
+    <p class="mt-2 text-base leading-6 text-slate-700">La protección y evaluación de llamadas funciona sin cuenta y sin agregar a un familiar. Si quieres, registra a alguien para que reciba avisos sobre llamadas de riesgo.</p>
+  </header>
+
+  {% if contacto_actual %}
+    <section class="rounded-2xl border border-emerald-300 bg-emerald-50 p-4" aria-live="polite">
+      <p class="text-sm font-bold uppercase tracking-wide text-emerald-800">Familiar seleccionado</p>
+      <p class="mt-1 text-lg font-extrabold text-emerald-950">{{ contacto_actual.nombre }}</p>
+      <p class="break-all text-base font-semibold text-emerald-900">{{ contacto_actual.numero_telefonico }}</p>
+      {% if contacto_actual.correo_electronico %}<p class="mt-1 break-all text-sm text-emerald-800">{{ contacto_actual.correo_electronico }}</p>{% endif %}
+    </section>
+  {% endif %}
+
+  <form method="post" class="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    {% csrf_token %}
+    {% if form.non_field_errors %}<div role="alert" class="rounded-xl border border-red-200 bg-red-50 p-3 text-sm font-semibold text-red-800">{{ form.non_field_errors|join:' ' }}</div>{% endif %}
+    <h2 class="text-lg font-extrabold text-slate-900">{% if contacto_actual %}Actualizar sus datos{% else %}Agregar un familiar{% endif %}</h2>
+    {% for field in form %}
+      <div class="space-y-1.5">
+        <label for="{{ field.id_for_label }}" class="block text-base font-bold text-slate-800">{{ field.label }}{% if field.field.required %}<span aria-hidden="true" class="text-red-700"> *</span>{% endif %}</label>
+        {{ field }}
+        {% if field.errors %}<p role="alert" class="text-sm font-semibold text-red-700">{{ field.errors|join:' ' }}</p>{% endif %}
+      </div>
+    {% endfor %}
+    <label class="flex min-h-14 items-start gap-3 rounded-xl bg-slate-50 p-3 text-sm font-semibold leading-5 text-slate-700">
+      <input type="checkbox" name="confirmar_familiar" required class="mt-0.5 h-6 w-6 shrink-0 rounded border-slate-300">
+      Confirmo que esta persona es de confianza y puede recibir avisos sobre llamadas de riesgo.
+    </label>
+    <button type="submit" class="min-h-14 w-full rounded-xl bg-brand-header px-5 py-3 text-base font-extrabold text-white">Guardar familiar</button>
+    <a href="{% url 'lista_contactos' %}" class="flex min-h-12 items-center justify-center rounded-xl border border-slate-300 px-4 text-base font-bold text-slate-700">Administrar números seguros</a>
+  </form>
+
+  <p class="rounded-xl bg-slate-100 p-3 text-sm leading-5 text-slate-600">Los avisos push requieren la integración Android. Si hay correo configurado, el sistema puede usarlo; esta pantalla no necesita crear una cuenta para el familiar.</p>
+</section>
+{% endblock %}

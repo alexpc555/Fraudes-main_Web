@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+{% block title %}Llamada · Tranquilízate{% endblock %}
+{% block content %}
+<section id="call-panel" data-call-id="{{ llamada.pk }}" data-prompt-id="{{ sesion.pregunta_actual }}-{{ sesion.intervenciones.count }}" data-prompt="{% if sesion.estado != 'FINALIZADA' %}{{ sesion.mensaje_actual|escapejs }}{% endif %}" class="-mx-4 -mt-4 -mb-6 min-h-full flex flex-col bg-gradient-to-b from-[#06477e] via-[#0b5790] to-[#073860] text-white">
+  <div class="flex items-center justify-between px-5 pt-4 text-xs text-white/80">
+    <a href="{% url 'administrar_llamadas' %}" aria-label="Volver" class="rounded-full p-2 hover:bg-white/10">←</a>
+    <span class="font-semibold tracking-wide">TRANQUILÍZATE</span>
+    <span class="rounded-full bg-white/10 px-3 py-1">{{ llamada.identificador }}</span>
+  </div>
+
+  <div class="flex flex-1 flex-col items-center px-6 pt-8 pb-7 text-center">
+    <div class="flex h-24 w-24 items-center justify-center rounded-full border border-white/20 bg-white/10 shadow-inner">
+      <svg class="h-11 w-11 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.5a6.5 6.5 0 0 0 6.5-6.5M5.5 12a6.5 6.5 0 0 0 6.5 6.5m0 0V22m-4 0h8M8 12a4 4 0 1 1 8 0v1a4 4 0 1 1-8 0v-1Z"/></svg>
+    </div>
+    <p class="mt-5 text-sm font-medium text-blue-100">Agente de protección · pregunta {{ sesion.pregunta_actual }} de 4</p>
+    <h1 class="mt-2 text-3xl font-semibold tracking-tight">{{ llamada.numero_telefonico }}</h1>
+    <p class="mt-1 text-sm text-blue-100">{% if sesion.estado == 'FINALIZADA' %}Llamada finalizada{% else %}Llamada de verificación{% endif %}</p>
+
+    {% if sesion.estado == 'FINALIZADA' %}
+      {% if request.session.rol_prueba == 'atacante' %}
+        <div class="mt-7 w-full rounded-3xl border border-white/15 bg-white/10 p-5 text-left backdrop-blur-sm">
+          {% if llamada.estado == 'PERMITIDA' %}
+            <p class="text-xs font-bold uppercase tracking-wider text-blue-100">Contacto seguro</p>
+            <h2 class="mt-2 text-xl font-bold">No se inició el filtro de IA</h2>
+            <p class="mt-2 text-sm leading-relaxed text-white/85">El número está guardado como seguro y la llamada se permitió directamente.</p>
+          {% elif llamada.estado == 'RECHAZADA' %}
+            <p class="text-xs font-bold uppercase tracking-wider text-blue-100">Número reportado</p>
+            <h2 class="mt-2 text-xl font-bold">Llamada terminada automáticamente</h2>
+            <p class="mt-2 text-sm leading-relaxed text-white/85">El número ya tiene reportes registrados; no pasó por la evaluación de IA.</p>
+          {% else %}
+            <p class="text-xs font-bold uppercase tracking-wider text-blue-100">Evaluación terminada</p>
+            <h2 class="mt-2 text-xl font-bold">El reporte se envió al usuario</h2>
+            <p class="mt-2 text-sm leading-relaxed text-white/85">La otra pantalla ya puede revisar el nivel de riesgo y decidir si contesta o rechaza esta llamada de prueba.</p>
+          {% endif %}
+          <a href="{% url 'prueba_roles' %}" class="mt-4 block rounded-xl bg-white px-4 py-3 text-center text-sm font-bold text-brand-dark">Volver a elegir rol</a>
+        </div>
+      {% else %}
+        <div class="mt-7 w-full rounded-3xl border border-white/15 bg-white/10 p-4 text-left backdrop-blur-sm">
+          <p class="text-xs font-bold uppercase tracking-wider text-blue-100">Evaluación de la llamada</p>
+          <h2 class="mt-2 text-xl font-bold">Riesgo {{ resumen.nivel_riesgo|default:'SIN EVALUAR' }}</h2>
+          <p class="mt-1 text-sm font-semibold">{{ resumen.clasificacion }}</p>
+          <p class="mt-3 text-sm leading-relaxed text-white/85">{{ resumen.texto_resumen }}</p>
+          <a href="{% url 'alerta_riesgo' llamada.pk %}" class="mt-4 block rounded-xl bg-white px-4 py-3 text-center text-sm font-bold text-brand-dark">Ver valoración completa</a>
+        </div>
+      {% endif %}
+      <div class="mt-6 flex w-full justify-center">
+        <a href="{% url 'administrar_llamadas' %}" class="flex h-16 w-16 items-center justify-center rounded-full bg-red-500 shadow-lg shadow-red-950/30" aria-label="Cerrar llamada"><svg class="h-7 w-7 rotate-[135deg]" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20a1 1 0 0 1-1 1C10.61 21 3 13.39 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1.02z"/></svg></a>
+      </div>
+    {% else %}
+      <div class="mt-8 grid w-full grid-cols-3 gap-5" aria-label="Controles de llamada">
+        <button type="button" data-call-toggle class="flex flex-col items-center gap-2 text-xs text-white/90"><span class="flex h-14 w-14 items-center justify-center rounded-full bg-white/15"><svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.5a6.5 6.5 0 0 0 6.5-6.5M5.5 12a6.5 6.5 0 0 0 6.5 6.5m0 0V22m-4 0h8M8 12a4 4 0 1 1 8 0v1a4 4 0 1 1-8 0v-1Z"/></svg></span><span>Silenciar</span></button>
+        <button type="button" data-call-toggle class="flex flex-col items-center gap-2 text-xs text-white/90"><span class="flex h-14 w-14 items-center justify-center rounded-full bg-white/15"><svg class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg></span><span>Altavoz</span></button>
+        <button type="button" id="show-chat" class="flex flex-col items-center gap-2 text-xs text-white/90"><span class="flex h-14 w-14 items-center justify-center rounded-full bg-white/15"><svg class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="6" r="1.7"/><circle cx="12" cy="6" r="1.7"/><circle cx="18" cy="6" r="1.7"/><circle cx="6" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="18" cy="12" r="1.7"/><circle cx="6" cy="18" r="1.7"/><circle cx="12" cy="18" r="1.7"/><circle cx="18" cy="18" r="1.7"/></svg></span><span>Conversación</span></button>
+      </div>
+
+      <div class="mt-8 w-full rounded-3xl bg-white/10 p-4 text-left backdrop-blur-sm">
+        <p id="voice-status" class="text-center text-sm text-blue-100" aria-live="polite">La IA hará la pregunta y empezará a escuchar. Responde con naturalidad; al terminar, procesará tu respuesta automáticamente.</p>
+        <button type="button" id="repeat-prompt" class="mx-auto mt-3 block rounded-full bg-white/15 px-4 py-2 text-sm font-bold text-white">🔊 Escuchar pregunta</button>
+        <form id="answer-form" method="post" enctype="multipart/form-data" class="mt-4 space-y-3">
+          {% csrf_token %}
+          <input id="audio-upload" type="file" name="audio" accept="audio/*" class="hidden">
+          <label for="respuesta" class="sr-only">Tu respuesta como llamante</label>
+          <textarea id="respuesta" name="respuesta" required rows="2" class="w-full resize-none rounded-2xl border border-white/20 bg-white/95 p-3 text-sm text-slate-800 placeholder:text-slate-400" placeholder="O escribe tu respuesta aquí…"></textarea>
+          <button type="submit" class="w-full rounded-xl bg-white/15 px-4 py-3 text-sm font-semibold text-white">Enviar respuesta escrita</button>
+        </form>
+      </div>
+
+      <div class="mt-auto flex w-full items-center justify-center gap-10 pt-7">
+        <button id="mic-button" type="button" class="flex h-[76px] w-[76px] items-center justify-center rounded-full bg-emerald-500 text-white shadow-xl shadow-emerald-950/35 transition active:scale-95" aria-label="Detener o reintentar grabación"><svg class="h-8 w-8" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.93V21h2v-3.07A7 7 0 0 0 19 11h-2Z"/></svg></button>
+        <a href="{% url 'administrar_llamadas' %}" class="flex h-[76px] w-[76px] items-center justify-center rounded-full bg-red-500 text-white shadow-xl shadow-red-950/35 transition active:scale-95" aria-label="Salir de la llamada"><svg class="h-8 w-8 rotate-[135deg]" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20a1 1 0 0 1-1 1C10.61 21 3 13.39 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1.02z"/></svg></a>
+      </div>
+      <div id="conversation" class="mt-6 hidden w-full rounded-2xl bg-white p-3 text-left text-slate-800">
+        <p class="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">Conversación</p>
+        <div class="max-h-40 space-y-2 overflow-y-auto">
+          {% for intervencion in intervenciones %}
+            {% if intervencion.tipo == 'PREGUNTA' %}<p class="mr-5 rounded-xl bg-blue-50 p-2 text-xs"><strong class="text-brand-primary">Agente:</strong> {{ intervencion.texto }}</p>{% elif intervencion.tipo == 'RESPUESTA' %}<p class="ml-5 rounded-xl bg-amber-50 p-2 text-xs"><strong class="text-amber-800">Respuesta:</strong> {{ intervencion.texto }}</p>{% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% if sesion.estado != 'FINALIZADA' %}
+<script>
+(() => {
+  const panel = document.getElementById('call-panel');
+  const status = document.getElementById('voice-status');
+  const answer = document.getElementById('respuesta');
+  const mic = document.getElementById('mic-button');
+  const form = document.getElementById('answer-form');
+  const audioInput = document.getElementById('audio-upload');
+  const prompt = panel.dataset.prompt;
+  const playedKey = `call-voice-${panel.dataset.callId}-${panel.dataset.promptId}`;
+  let autoListen = null;
+  const speakPrompt = () => {
+    if (prompt && 'speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(prompt);
+      utterance.lang = 'es-MX';
+      utterance.rate = 1.02;
+      utterance.onstart = () => { status.textContent = 'La IA está haciendo la pregunta…'; };
+      utterance.onend = () => { status.textContent = 'Te escucho. Responde cuando quieras; detectaré cuando termines.'; autoListen?.(); };
+      window.speechSynthesis.cancel(); window.speechSynthesis.speak(utterance);
+      sessionStorage.setItem(playedKey, '1');
+    } else {
+      status.textContent = 'La voz no está disponible. Lee la pregunta y responde; detectaré cuando termines.';
+      autoListen?.();
+    }
+  };
+  document.getElementById('repeat-prompt').addEventListener('click', () => {
+    if (!prompt || !('speechSynthesis' in window)) {
+      status.textContent = 'La voz no está disponible en este navegador. Puedes leer la pregunta en pantalla.';
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(prompt);
+    utterance.lang = 'es-MX';
+    utterance.onend = () => { status.textContent = 'Te escucho. Responde cuando quieras; detectaré cuando termines.'; autoListen?.(); };
+    window.speechSynthesis.speak(utterance);
+    status.textContent = 'La IA está repitiendo la pregunta…';
+  });
+  let recorder = null;
+  let stream = null;
+  let chunks = [];
+  let grabando = false;
+  let audioContext = null;
+  let silenceTimer = null;
+  let vozDetectada = false;
+  async function startRecording() {
+    if (grabando) return;
+    if (!window.isSecureContext) {
+      status.textContent = 'Esta dirección no permite usar el micrófono. Para Chrome en la computadora, ejecuta ./scripts/run_https_demo.sh y abre https://localhost:8443/. También puedes usar localhost por HTTP o conectar Android por USB con el script run_android_mic.sh. No uses una IP local con HTTP.';
+      return;
+    }
+    if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) {
+      status.textContent = 'Este navegador no puede grabar audio. Prueba Chrome actualizado o escribe la respuesta.';
+      return;
+    }
+    try {
+      if (!stream) {
+        status.textContent = 'Solicitando permiso de micrófono…';
+        stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true, channelCount: 1 } });
+      }
+      const tipos = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg;codecs=opus'];
+      const mimeType = tipos.find((tipo) => MediaRecorder.isTypeSupported(tipo));
+      recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+      chunks = [];
+      recorder.ondataavailable = (event) => { if (event.data.size) chunks.push(event.data); };
+      recorder.onstart = () => {
+        vozDetectada = false;
+        grabando = true; mic.classList.add('animate-pulse', 'ring-4', 'ring-red-300');
+        status.textContent = 'Te escucho… al terminar de hablar, esperaré un momento y enviaré tu respuesta.';
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (AudioCtx) {
+          audioContext = new AudioCtx();
+          const source = audioContext.createMediaStreamSource(stream);
+          const analyser = audioContext.createAnalyser(); analyser.fftSize = 1024;
+          source.connect(analyser);
+          const data = new Uint8Array(analyser.fftSize);
+          let huboVoz = false, ultimoSonido = Date.now(), inicio = Date.now();
+          silenceTimer = window.setInterval(() => {
+            analyser.getByteTimeDomainData(data);
+            let suma = 0;
+            for (const sample of data) { const valor = (sample - 128) / 128; suma += valor * valor; }
+            const rms = Math.sqrt(suma / data.length);
+            if (rms > 0.018) { huboVoz = true; vozDetectada = true; ultimoSonido = Date.now(); }
+            if ((huboVoz && Date.now() - ultimoSonido > 1300 && Date.now() - inicio > 900) || Date.now() - inicio > 15000) recorder.stop();
+          }, 120);
+        }
+      };
+      recorder.onstop = () => {
+        grabando = false; mic.classList.remove('animate-pulse', 'ring-4', 'ring-red-300');
+        window.clearInterval(silenceTimer);
+        if (audioContext) { audioContext.close(); audioContext = null; }
+        if (!vozDetectada) { status.textContent = 'No detecté voz. Acércate un poco al teléfono y toca el micrófono para reintentar.'; return; }
+        if (!chunks.length) { status.textContent = 'No se grabó audio. Toca el micrófono para reintentar o escribe tu respuesta.'; return; }
+        const blob = new Blob(chunks, { type: recorder.mimeType || 'audio/webm' });
+        const extension = blob.type.includes('mp4') ? 'm4a' : blob.type.includes('ogg') ? 'ogg' : 'webm';
+        const file = new File([blob], `respuesta.${extension}`, { type: blob.type });
+        const transfer = new DataTransfer(); transfer.items.add(file); audioInput.files = transfer.files;
+        answer.required = false; answer.value = '';
+        status.textContent = 'Procesando tu respuesta… la siguiente pregunta aparecerá automáticamente.';
+        form.requestSubmit();
+      };
+      recorder.start();
+    } catch (error) {
+      if (stream) stream.getTracks().forEach((track) => track.stop());
+      status.textContent = error.name === 'NotAllowedError' || error.name === 'SecurityError'
+        ? 'No se concedió permiso al micrófono. En Android, toca el icono junto a la dirección y permite Micrófono.'
+        : error.name === 'NotFoundError' ? 'No se encontró un micrófono disponible.'
+        : 'No se pudo iniciar la grabación. Revisa permisos y toca el micrófono para reintentar.';
+    }
+  }
+  autoListen = startRecording;
+  mic.addEventListener('click', () => {
+    if (grabando) recorder.stop();
+    else startRecording();
+  });
+  answer.addEventListener('input', () => {
+    if (audioInput.files.length) audioInput.value = '';
+    answer.required = true;
+  });
+  document.querySelectorAll('[data-call-toggle]').forEach((button) => button.addEventListener('click', () => {
+    button.classList.toggle('opacity-50'); button.querySelector('span').classList.toggle('bg-emerald-500');
+  }));
+  document.getElementById('show-chat').addEventListener('click', () => document.getElementById('conversation').classList.toggle('hidden'));
+  if (prompt) {
+    if (sessionStorage.getItem(playedKey)) autoListen();
+    else speakPrompt();
+  }
+  window.addEventListener('pagehide', () => { if (stream) stream.getTracks().forEach((track) => track.stop()); });
+})();
+</script>
+{% endif %}
+{% endblock %}

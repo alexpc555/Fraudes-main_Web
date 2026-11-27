@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}Iniciar llamada de prueba{% endblock %}
+{% block content %}
+<main class="mx-auto max-w-xl space-y-5 py-5">
+  <a href="{% url 'prueba_roles' %}" class="inline-flex min-h-12 items-center font-bold text-brand-header">← Cambiar rol</a>
+  <section class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+    <p class="text-sm font-bold uppercase tracking-wide text-brand-primary">Rol de prueba · Atacante</p>
+    <h1 class="mt-2 text-2xl font-black text-brand-header">Llamar al usuario</h1>
+    <p class="mt-2 text-slate-600">Escribe el número que aparecerá en la pantalla del destinatario. Después responde hablando cuando la IA haga sus preguntas.</p>
+    <form method="post" class="mt-6 space-y-4">
+      {% csrf_token %}
+      <label for="id_numero_telefonico" class="block text-base font-bold text-slate-800">Número de quien llama</label>
+      {{ form.numero_telefonico }}
+      {% if form.numero_telefonico.errors %}<p class="text-sm font-semibold text-red-700">{{ form.numero_telefonico.errors|join:', ' }}</p>{% endif %}
+      <button class="min-h-14 w-full rounded-2xl bg-brand-header px-5 py-3 text-lg font-bold text-white">Iniciar llamada de prueba</button>
+    </form>
+  </section>
+</main>
+{% endblock %}

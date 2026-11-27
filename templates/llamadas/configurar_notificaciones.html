@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block title %}Notificaciones{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-xl space-y-4 pb-4">
+  <a href="{% url 'configuracion_aplicacion' adulto_id=adulto.pk %}?paso=notificaciones" class="inline-flex min-h-12 items-center text-base font-bold text-brand-header">← Configuración inicial</a>
+  <header class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <p class="text-sm font-bold uppercase tracking-wide text-brand-header">CU-21</p>
+    <h1 class="mt-1 text-2xl font-extrabold text-brand-navy">Notificaciones</h1>
+    <p class="mt-2 text-base leading-relaxed text-slate-700">El contacto elegido recibirá avisos cuando se detecte una llamada de riesgo alto o cuando se acepte una llamada amarilla o roja. El aviso no incluye contraseñas, códigos ni datos bancarios.</p>
+  </header>
+  <a href="{% url 'ayuda_tema' tema='notificaciones-familiares' %}?volver={{ request.get_full_path|urlencode }}" class="inline-flex min-h-12 items-center text-base font-bold text-brand-header">Ayuda sobre avisos familiares</a>
+
+  {% if configuracion_notificaciones %}
+    <section class="rounded-2xl border border-emerald-300 bg-emerald-50 p-5" aria-live="polite">
+      <h2 class="text-lg font-extrabold text-emerald-900">Contacto configurado</h2>
+      <p class="mt-2 text-base font-bold text-emerald-900">{{ configuracion_notificaciones.contacto_confianza.nombre }}</p>
+      <p class="text-base text-emerald-800">{{ configuracion_notificaciones.contacto_confianza.numero_telefonico }}</p>
+      {% if configuracion_notificaciones.contacto_confianza.correo_electronico %}<p class="text-sm text-emerald-800">{{ configuracion_notificaciones.contacto_confianza.correo_electronico }}</p>{% endif %}
+      <p class="mt-2 text-sm text-emerald-800">Última modificación: {{ configuracion_notificaciones.actualizado_en|date:'d/m/Y H:i' }}</p>
+    </section>
+  {% else %}
+    <section class="rounded-2xl border border-amber-300 bg-amber-50 p-4">
+      <p class="text-base font-bold text-amber-900">Todavía no hay un contacto activo configurado para recibir avisos.</p>
+    </section>
+  {% endif %}
+
+  {% if contactos %}
+    <form method="post" class="space-y-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      {% csrf_token %}
+      <fieldset class="space-y-3">
+        <legend class="mb-2 text-lg font-extrabold text-slate-900">Elige un contacto seguro</legend>
+        {% for contacto in contactos %}
+          <label for="contacto-{{ contacto.pk }}" class="flex min-h-16 cursor-pointer items-start gap-3 rounded-xl border border-slate-200 p-4 hover:bg-blue-50">
+            <input id="contacto-{{ contacto.pk }}" type="radio" name="contacto_id" value="{{ contacto.pk }}" required class="mt-1 h-6 w-6"
+              {% if configuracion_notificaciones.contacto_confianza_id == contacto.pk %}checked{% endif %}>
+            <span class="block">
+              <span class="block text-base font-bold text-slate-900">{{ contacto.nombre }}</span>
+              <span class="block text-base text-slate-700">{{ contacto.numero_telefonico }}</span>
+              {% if contacto.correo_electronico %}<span class="block text-sm text-slate-600">{{ contacto.correo_electronico }}</span>{% endif %}
+              <span class="block text-sm text-slate-600">{{ contacto.relacion|default:'Contacto de confianza' }}</span>
+            </span>
+          </label>
+        {% endfor %}
+      </fieldset>
+      <label class="flex min-h-14 items-center gap-3 rounded-xl bg-slate-50 p-4 text-base font-semibold text-slate-800">
+        <input type="checkbox" name="confirmar_contacto" required class="h-6 w-6 rounded">
+        Confirmo que este es el contacto seguro correcto.
+      </label>
+      <button type="submit" class="min-h-14 w-full rounded-xl bg-brand-header px-5 py-3 text-base font-bold text-white">Guardar configuración</button>
+    </form>
+  {% else %}
+    <section class="space-y-3 rounded-2xl border border-slate-200 bg-white p-5">
+      <p class="text-base leading-relaxed text-slate-700">Agrega primero un contacto activo a la agenda de confianza de {{ adulto.get_full_name|default:adulto.username }}.</p>
+      <a href="{{ contactos_url }}" class="flex min-h-14 items-center justify-center rounded-xl bg-brand-header px-5 py-3 text-base font-bold text-white">Ir a contactos de confianza</a>
+    </section>
+  {% endif %}
+
+  <section class="rounded-2xl border border-blue-200 bg-blue-50 p-4">
+    <h2 class="text-base font-bold text-brand-navy">Canales de aviso</h2>
+    <p class="mt-1 text-sm leading-relaxed text-slate-700">Los eventos se registran en el sistema. Las notificaciones push de Android quedarán pendientes hasta conectar FCM. El correo solo se envía cuando está habilitado y el contacto tiene correo registrado.</p>
+  </section>
+</section>
+{% endblock %}

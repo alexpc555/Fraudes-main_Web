@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}Resumen de llamada{% endblock %}
+
+{% block content %}
+<section class="mx-auto max-w-xl space-y-4">
+  <div class="flex items-center justify-between">
+    <div>
+      <p class="text-sm font-bold uppercase tracking-wide text-brand-accent">Resultado del análisis</p>
+      <h1 class="text-2xl font-extrabold text-brand-navy">Resumen de llamada</h1>
+    </div>
+    <a href="{% url 'detalle_llamada' llamada.pk %}" class="inline-flex min-h-12 items-center rounded-xl border border-slate-300 bg-white px-3 text-sm font-bold text-brand-header">Volver al detalle</a>
+  </div>
+
+  <section class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+    <p class="text-sm font-semibold text-slate-500">Número evaluado</p>
+    <p class="mt-1 break-all text-xl font-extrabold tracking-wide text-slate-900">{{ llamada.numero_telefonico }}</p>
+    <div class="mt-3 flex flex-wrap gap-x-4 gap-y-1 border-t border-slate-100 pt-3 text-sm text-slate-600">
+      <span>{{ llamada.identificador }}</span>
+      <span>{{ llamada.fecha_hora_recepcion|date:'d/m/Y' }} · {{ llamada.fecha_hora_recepcion|time:'H:i' }}</span>
+    </div>
+  </section>
+
+  <section role="status" aria-live="polite" class="rounded-2xl border p-5 shadow-sm {% if clasificacion_riesgo.nivel == 'ROJO' %}border-red-300 bg-red-50{% elif clasificacion_riesgo.nivel == 'AMARILLO' %}border-amber-300 bg-amber-50{% else %}border-emerald-300 bg-emerald-50{% endif %}">
+    <div class="flex items-start gap-3">
+      <span aria-hidden="true" class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-2xl font-black {% if clasificacion_riesgo.nivel == 'ROJO' %}bg-red-100 text-red-800{% elif clasificacion_riesgo.nivel == 'AMARILLO' %}bg-amber-100 text-amber-900{% else %}bg-emerald-100 text-emerald-800{% endif %}">{% if clasificacion_riesgo.nivel == 'ROJO' %}!{% elif clasificacion_riesgo.nivel == 'AMARILLO' %}⚠{% else %}✓{% endif %}</span>
+      <div class="min-w-0 flex-1">
+        <p class="text-sm font-bold uppercase tracking-wide text-slate-600">Nivel de riesgo · {{ clasificacion_riesgo.nivel }}</p>
+        <h2 class="mt-1 text-xl font-extrabold {% if clasificacion_riesgo.nivel == 'ROJO' %}text-red-900{% elif clasificacion_riesgo.nivel == 'AMARILLO' %}text-amber-950{% else %}text-emerald-900{% endif %}">{% if clasificacion_riesgo.nivel == 'ROJO' %}Riesgo alto{% elif clasificacion_riesgo.nivel == 'AMARILLO' %}Precaución{% else %}Sin señales importantes{% endif %}</h2>
+        <p class="mt-2 text-base leading-6 text-slate-700">{{ clasificacion_riesgo.motivo|default:analisis.explicacion }}</p>
+      </div>
+    </div>
+    <div class="mt-4 rounded-xl bg-white/70 p-3 text-sm text-slate-700">
+      <p><strong>Puntuación:</strong> {{ clasificacion_riesgo.puntuacion }} de 100</p>
+      <p class="mt-1"><strong>Señales:</strong> {{ clasificacion_riesgo.señales|default:'No se registraron señales específicas.' }}</p>
+    </div>
+  </section>
+
+  <section class="space-y-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+    <div>
+      <h2 class="text-lg font-extrabold text-slate-900">¿Qué pasó en la llamada?</h2>
+      <p class="mt-1 text-sm leading-5 text-slate-600">El resumen organiza la información disponible para ayudarte a decidir.</p>
+    </div>
+    <dl class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+      <div class="rounded-xl bg-slate-50 p-3"><dt class="text-xs font-bold uppercase tracking-wide text-slate-500">Quién llamó</dt><dd class="mt-1 text-base font-semibold text-slate-800">{{ resumen.identidad_declarada|default:'No identificado' }}</dd></div>
+      <div class="rounded-xl bg-slate-50 p-3"><dt class="text-xs font-bold uppercase tracking-wide text-slate-500">Institución mencionada</dt><dd class="mt-1 text-base font-semibold text-slate-800">{{ resumen.institucion|default:'No identificada' }}</dd></div>
+      <div class="rounded-xl bg-slate-50 p-3 sm:col-span-2"><dt class="text-xs font-bold uppercase tracking-wide text-slate-500">Motivo que dio</dt><dd class="mt-1 text-base leading-6 text-slate-800">{{ resumen.motivo|default:'No se pudo determinar el motivo de la llamada.' }}</dd></div>
+      <div class="rounded-xl bg-blue-50 p-3 sm:col-span-2"><dt class="text-xs font-bold uppercase tracking-wide text-brand-navy">Recomendación</dt><dd class="mt-1 text-base leading-6 text-slate-800">{{ resumen.explicacion|default:'Si tienes dudas, termina la llamada y comunícate con la institución por un número oficial.' }}</dd></div>
+    </dl>
+    <button type="button" class="flex min-h-14 w-full items-center justify-center gap-2 rounded-xl bg-brand-navy px-4 text-base font-bold text-white shadow-sm" data-tts-action="play" data-tts-text="{{ resumen.texto_resumen|escapejs }}" data-tts-lang="es-MX" aria-label="Escuchar resumen de la llamada">
+      <span aria-hidden="true">🔊</span> Escuchar resumen
+    </button>
+  </section>
+
+  <section class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+    <h2 class="text-lg font-extrabold text-slate-900">Señales detectadas</h2>
+    <ul class="mt-3 space-y-2">
+      {% for indicador in llamada.indicadores_fraude.all %}
+        <li class="flex items-start gap-3 rounded-xl bg-slate-50 p-3">
+          <span aria-hidden="true" class="mt-1 h-2.5 w-2.5 shrink-0 rounded-full {% if indicador.gravedad == 'ALTA' or indicador.gravedad == 'CRITICA' %}bg-red-600{% elif indicador.gravedad == 'MEDIA' %}bg-amber-500{% else %}bg-slate-400{% endif %}"></span>
+          <div><p class="font-bold text-slate-800">{{ indicador.nombre }}</p>{% if indicador.descripcion %}<p class="mt-0.5 text-sm leading-5 text-slate-600">{{ indicador.descripcion }}</p>{% endif %}</div>
+        </li>
+      {% empty %}
+        <li class="rounded-xl bg-slate-50 p-3 text-sm leading-5 text-slate-600">No se encontraron señales específicas en el catálogo. Esto no garantiza que la llamada sea segura.</li>
+      {% endfor %}
+    </ul>
+    <a href="{% url 'ayuda_tema' tema='interpretar-alerta' %}?volver={{ request.get_full_path|urlencode }}" class="mt-3 inline-flex min-h-12 items-center text-base font-bold text-brand-header">Ayuda para entender este resultado</a>
+  </section>
+
+  <div class="rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm leading-5 text-slate-700">
+    Este análisis es informativo. La pantalla de llamada entrante es donde se registra la decisión de contestar o rechazar.
+  </div>
+</section>
+{% endblock %}

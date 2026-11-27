@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Valoración de la llamada - Tranquilízate</title>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              navy: '#053f74',
+              dark: '#032c52',
+              blue: '#0a5699',
+              lightBlue: '#e9f2fb',
+              bgGray: '#f8fafc',
+              alertBg: '#fef1ea',
+              alertBorder: '#ffdcd0',
+              alertText: '#c93b2b',
+              alertTitle: '#a5281b',
+              shieldBg: '#eaf4fd',
+            }
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-layout">
+    /* Fix mobile viewport height and remove scrollbar */
+    body {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-slate-900 flex justify-center items-center min-h-screen p-0 sm:p-4 font-sans text-slate-800 antialiased">
+<!-- BEGIN: PhoneFrame -->
+<div class="w-full max-w-[390px] h-[844px] bg-brand-bgGray rounded-[44px] shadow-2xl overflow-hidden flex flex-col relative border-[7px] border-slate-800">
+<!-- BEGIN: iOSStatusBar -->
+<div class="w-full h-11 bg-brand-navy flex justify-between items-center px-7 text-white text-xs font-semibold select-none z-20 shrink-0" data-purpose="status-bar">
+<span class="tracking-tight text-[13px]">9:41</span>
+<div class="flex items-center space-x-2 text-[11px]">
+<!-- Signal bars -->
+<svg class="w-3.5 h-3.5 fill-current" viewbox="0 0 24 24">
+<path d="M2 18h3v4H2v-4zm5-4h3v8H7v-8zm5-4h3v12h-3V10zm5-5h3v17h-3V5z"></path>
+</svg>
+<!-- Wifi icon -->
+<svg class="w-3.5 h-3.5 fill-current" viewbox="0 0 24 24">
+<path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98C20.93 5.9 16.69 4 12 4zm0 3.32c3.8 0 7.23 1.54 9.72 4.03L12 19.06 2.28 11.35C4.77 8.86 8.2 7.32 12 7.32z"></path>
+</svg>
+<!-- Battery icon -->
+<div class="flex items-center">
+<div class="w-5 h-2.5 border border-white rounded-[3px] p-[1px] flex items-center">
+<div class="w-full h-full bg-white rounded-[1px]"></div>
+</div>
+<div class="w-[1.5px] h-1 bg-white rounded-r-sm"></div>
+</div>
+</div>
+</div>
+<!-- END: iOSStatusBar -->
+<!-- BEGIN: AppHeader -->
+<header class="bg-brand-navy text-white px-5 pt-2 pb-6 flex flex-col shrink-0" data-purpose="app-header">
+<!-- Navigation row -->
+<div class="flex items-center justify-between mb-4">
+<button aria-label="Regresar" class="p-1 -ml-1 text-white hover:opacity-80 transition active:scale-95" id="btn-back" type="button">
+<svg class="w-6 h-6 stroke-current stroke-2 fill-none" viewbox="0 0 24 24">
+<path d="M10 19l-7-7m0 0l7-7m-7 7h18" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<h1 class="text-lg font-bold tracking-tight text-white">Tranquilízate</h1>
+<button aria-label="Seguridad" class="p-1 -mr-1 text-white/90 hover:opacity-100" type="button">
+<svg class="w-6 h-6 stroke-current stroke-[1.8] fill-none" viewbox="0 0 24 24">
+<path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</div>
+<!-- Header Title -->
+<div class="mt-1">
+<h2 class="text-[22px] font-bold tracking-tight">Valoración de la llamada</h2>
+<div class="w-4 h-0.5 bg-white/40 mt-1 rounded-full"></div>
+</div>
+</header>
+<!-- END: AppHeader -->
+<!-- BEGIN: ScrollableContent -->
+<main class="flex-1 overflow-y-auto px-4 py-4 space-y-3.5 hide-scrollbar" data-purpose="main-content">
+<!-- Card: Caller Information -->
+<section class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex items-center space-x-3.5" data-purpose="caller-card">
+<div class="w-11 h-11 rounded-full bg-blue-50 flex items-center justify-center shrink-0 text-brand-navy">
+<svg class="w-5 h-5 fill-current text-brand-navy" viewbox="0 0 24 24">
+<path d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"></path>
+</svg>
+</div>
+<div class="flex-1 min-w-0">
+<span class="text-xs font-medium text-slate-500 block leading-tight">Número desconocido</span>
+<span class="text-[17px] font-bold text-brand-navy tracking-tight mt-0.5 block">+52 55 1234 5678</span>
+</div>
+</section>
+<!-- Card: Alert High Risk -->
+<section class="bg-brand-alertBg border border-brand-alertBorder rounded-2xl p-4 shadow-sm" data-purpose="alert-card">
+<div class="flex items-center space-x-3 mb-2.5">
+<!-- Warning Icon Badge -->
+<div class="w-9 h-9 rounded-xl bg-orange-100/90 border border-orange-200 flex items-center justify-center text-orange-600 shrink-0">
+<svg class="w-5 h-5 fill-none stroke-current stroke-2" viewbox="0 0 24 24">
+<path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<div>
+<h3 class="text-[17px] font-extrabold text-brand-alertTitle leading-none">¡Peligro!</h3>
+<span class="text-[12px] font-bold text-brand-alertText tracking-wide mt-1 block">Riesgo alto - Posible fraude</span>
+</div>
+</div>
+<p class="text-[13px] leading-relaxed text-slate-700 font-normal mt-2">
+          Posible intento de fraude. La llamada menciona un cargo no reconocido y solicita datos sensibles como NIP y CVV.
+        </p>
+</section>
+<!-- Card: Call Summary & Audio Player -->
+<section class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100" data-purpose="summary-card">
+<h4 class="text-[15px] font-bold text-slate-900 leading-tight">Resumen de la llamada</h4>
+<p class="text-[12px] text-slate-500 mt-1 mb-3.5 leading-normal">
+          Escucha los puntos importantes que detectó tu agente.
+        </p>
+<!-- Audio Play Button -->
+<button class="w-full bg-brand-navy hover:bg-brand-dark active:scale-[0.98] transition-all text-white font-medium py-3 px-4 rounded-xl flex items-center justify-center space-x-2.5 shadow-sm" id="btn-audio" type="button">
+<svg class="w-5 h-5 fill-current" id="audio-icon" viewbox="0 0 24 24">
+<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"></path>
+</svg>
+<span class="text-sm font-semibold tracking-wide" id="audio-text">Reproducir resumen</span>
+</button>
+<!-- Detected Evidence Bullet Points -->
+<div class="mt-4 pt-3.5 border-t border-slate-100">
+<p class="text-[12px] font-semibold text-slate-500 mb-2">Indicios detectados</p>
+<ul class="space-y-1.5 text-[13px] text-slate-700 font-medium">
+<li class="flex items-center space-x-2">
+<span class="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0"></span>
+<span>Cargo no reconocido</span>
+</li>
+<li class="flex items-center space-x-2">
+<span class="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0"></span>
+<span>Solicitud de NIP y CVV</span>
+</li>
+</ul>
+</div>
+</section>
+<!-- Card: Security Advice -->
+<section class="bg-brand-shieldBg/70 border border-blue-100 rounded-2xl p-3.5 flex items-start space-x-3" data-purpose="safety-advice">
+<div class="mt-0.5 text-brand-blue shrink-0">
+<svg class="w-5 h-5 stroke-current stroke-2 fill-none" viewbox="0 0 24 24">
+<path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<div>
+<h5 class="text-[13px] font-bold text-brand-navy leading-tight">No compartas tus datos</h5>
+<p class="text-[11px] leading-relaxed text-slate-600 mt-1">
+            Contacta a tu banco a través de su número oficial para verificar el cargo.
+          </p>
+</div>
+</section>
+<!-- Action Button: Block Number -->
+<div class="pt-1 pb-4">
+<button class="w-full bg-white border border-slate-200 hover:bg-slate-50 active:bg-slate-100 text-brand-navy font-semibold text-sm py-3.5 px-4 rounded-2xl flex items-center justify-center space-x-2 transition shadow-sm" id="btn-block" type="button">
+<svg class="w-5 h-5 stroke-current stroke-2 fill-none text-brand-navy" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="9"></circle>
+<path d="M5.5 5.5l13 13" stroke-linecap="round"></path>
+</svg>
+<span id="block-text">Bloquear número</span>
+</button>
+</div>
+</main>
+<!-- END: ScrollableContent -->
+<!-- BEGIN: iOSHomeIndicator -->
+<div class="w-full h-6 flex justify-center items-center bg-transparent shrink-0" data-purpose="home-indicator-container">
+<div class="w-32 h-1 bg-slate-900/30 rounded-full"></div>
+</div>
+<!-- END: iOSHomeIndicator -->
+<!-- Toast Notification Overlay -->
+<div class="absolute bottom-10 left-1/2 -translate-x-1/2 bg-slate-900/90 text-white text-xs px-4 py-2 rounded-full opacity-0 pointer-events-none transition-opacity duration-300 z-50 whitespace-nowrap shadow-lg" id="toast">
+      Acción realizada
+    </div>
+</div>
+<!-- END: PhoneFrame -->
+<!-- JavaScript Functionality -->
+<script data-purpose="interactive-actions">
+    const btnAudio = document.getElementById('btn-audio');
+    const audioText = document.getElementById('audio-text');
+    const btnBlock = document.getElementById('btn-block');
+    const blockText = document.getElementById('block-text');
+    const toast = document.getElementById('toast');
+    const btnBack = document.getElementById('btn-back');
+
+    let isPlaying = false;
+    let isBlocked = false;
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.remove('opacity-0');
+      toast.classList.add('opacity-100');
+      setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        toast.classList.add('opacity-0');
+      }, 2400);
+    }
+
+    // Toggle Audio Simulation
+    btnAudio.addEventListener('click', () => {
+      isPlaying = !isPlaying;
+      if (isPlaying) {
+        audioText.textContent = 'Pausar resumen (0:14)';
+        btnAudio.classList.replace('bg-brand-navy', 'bg-emerald-700');
+        showToast('Reproduciendo análisis de voz...');
+      } else {
+        audioText.textContent = 'Reproducir resumen';
+        btnAudio.classList.replace('bg-emerald-700', 'bg-brand-navy');
+      }
+    });
+
+    // Toggle Block Number
+    btnBlock.addEventListener('click', () => {
+      isBlocked = !isBlocked;
+      if (isBlocked) {
+        blockText.textContent = 'Número bloqueado ✓';
+        btnBlock.classList.add('text-red-600', 'border-red-200', 'bg-red-50');
+        showToast('+52 55 1234 5678 añadido a la lista negra');
+      } else {
+        blockText.textContent = 'Bloquear número';
+        btnBlock.classList.remove('text-red-600', 'border-red-200', 'bg-red-50');
+        showToast('Número desbloqueado');
+      }
+    });
+
+    // Back button simulation
+    btnBack.addEventListener('click', () => {
+      showToast('Volviendo al historial de llamadas...');
+    });
+  </script>
+</body></html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>{% block title %}Tranquilízate{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                header: '#00427A',
+                primary: '#0B4A82',
+                dark: '#08325B',
+                navy: '#0F3B66',
+                lightBlue: '#E8F1FA',
+                softBg: '#F3F8FC',
+                mint: '#E5F6EE',
+                mintText: '#187B57',
+                accent: '#1976D2'
+              }
+            }
+          }
+        }
+      };
+    </script>
+    <style>
+      body {
+        background: #0f172a;
+        -webkit-tap-highlight-color: transparent;
+        user-select: none;
+      }
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+  </head>
+  <body class="flex min-h-[100dvh] justify-center {% if pantalla_llamada %}items-stretch overflow-hidden{% else %}items-center py-0 sm:py-6{% endif %}">
+    <main class="w-full {% if pantalla_llamada %}h-[100dvh] max-w-none border-0 rounded-none{% else %}max-w-[393px] h-[100dvh] sm:h-[min(844px,100dvh)] sm:rounded-[44px] border-[5px] border-slate-900 border-opacity-90{% endif %} bg-[#F8FAFC] shadow-2xl overflow-hidden flex flex-col relative">
+      {% if not pantalla_llamada %}<header class="bg-brand-header text-white pt-3 pb-4 px-6 flex flex-col justify-between shrink-0 shadow-md">
+        <div class="flex justify-between items-center text-xs font-semibold tracking-tight pb-3 pt-1">
+          <span class="text-sm tracking-normal font-semibold">9:41</span>
+          <div class="flex items-center space-x-1.5 text-white">
+            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><rect height="5" rx="1" width="3" x="2" y="16"></rect><rect height="9" rx="1" width="3" x="7" y="12"></rect><rect height="13" rx="1" width="3" x="12" y="8"></rect><rect height="17" rx="1" width="3" x="17" y="4"></rect></svg>
+            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98C20.93 5.9 16.69 4 12 4zm0 3.5c3.62 0 6.91 1.41 9.35 3.73l-2.03 2.05C17.47 11.66 14.88 10.5 12 10.5s-5.47 1.16-7.32 2.78l-2.03-2.05C5.09 8.91 8.38 7.5 12 7.5z"></path></svg>
+            <div class="flex items-center">
+              <div class="w-5 h-2.5 border border-white rounded-[3px] p-0.5 flex items-center"><div class="h-full w-full bg-white rounded-[1px]"></div></div>
+              <div class="w-0.5 h-1 bg-white rounded-r-sm ml-px"></div>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center justify-between mt-2">
+          <h1 class="text-xl font-bold tracking-tight text-white">Tranquilízate</h1>
+          <a href="{% url 'administrar_llamadas' %}" aria-label="Regresar al inicio" class="inline-flex min-h-11 items-center gap-2 rounded-xl bg-white/15 px-3 text-sm font-bold text-white hover:bg-white/25 focus:outline-none focus:ring-2 focus:ring-white">
+            <svg class="h-5 w-5 fill-none stroke-current stroke-2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m3 10 9-7 9 7M5 9v11h14V9M9 20v-6h6v6"/></svg>
+            <span>Inicio</span>
+          </a>
+        </div>
+      </header>{% endif %}
+
+      <div class="min-h-0 flex-1 {% if pantalla_llamada %}overflow-hidden p-0{% else %}overflow-y-auto no-scrollbar px-4 pt-4 pb-6 space-y-4{% endif %}">
+        {% if messages %}
+          {% for message in messages %}
+            <div class="rounded-2xl border px-3 py-3 text-sm font-semibold {% if 'error' in message.tags %}border-red-200 bg-red-50 text-red-800{% elif 'warning' in message.tags %}border-amber-200 bg-amber-50 text-amber-900{% else %}border-emerald-200 bg-emerald-50 text-emerald-800{% endif %}" role="status">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+        {% block content %}{% endblock %}
+      </div>
+    </main>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const supportsSpeech = 'speechSynthesis' in window;
+        document.querySelectorAll('[data-tts-text]').forEach((button) => {
+          const action = button.dataset.ttsAction || 'play';
+          button.addEventListener('click', function () {
+            const text = (button.dataset.ttsText || '').trim();
+            if (!text) {
+              alert('No hay texto para reproducir.');
+              return;
+            }
+            if (!supportsSpeech) {
+              alert('El navegador no admite texto a voz.');
+              return;
+            }
+            const synth = window.speechSynthesis;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = button.dataset.ttsLang || 'es-MX';
+            utterance.rate = Number(button.dataset.ttsRate || '1');
+            utterance.pitch = Number(button.dataset.ttsPitch || '1');
+            if (action === 'play') {
+              synth.cancel();
+              synth.speak(utterance);
+            } else if (action === 'pause') {
+              if (synth.speaking && !synth.paused) synth.pause();
+            } else if (action === 'resume') {
+              if (synth.paused) synth.resume();
+            } else if (action === 'stop') {
+              synth.cancel();
+            }
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

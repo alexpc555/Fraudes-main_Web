@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}Llamada entrante{% endblock %}
+{% block content %}
+<section id="incoming-call" data-call-id="{{ llamada.pk }}" data-risk="{{ clasificacion_riesgo.nivel }}" data-summary="{% if clasificacion_riesgo.nivel == 'ROJO' %}Alerta. Riesgo alto. {% elif clasificacion_riesgo.nivel == 'AMARILLO' %}Precaución. Riesgo medio. {% else %}Riesgo bajo. {% endif %}{{ resumen.texto_resumen|default:resumen.explicacion|escapejs }}" class="flex h-full min-h-0 w-full flex-col overflow-hidden bg-gradient-to-b from-[#071d31] via-[#0b3555] to-[#061a2c] px-4 pb-[max(0.5rem,env(safe-area-inset-bottom))] text-white {% if clasificacion_riesgo.nivel == 'ROJO' %}border-red-600{% elif clasificacion_riesgo.nivel == 'AMARILLO' %}border-yellow-400{% else %}border-green-500{% endif %}" style="border-width:6px; box-shadow:inset 0 0 22px {% if clasificacion_riesgo.nivel == 'ROJO' %}rgba(220,38,38,.4){% elif clasificacion_riesgo.nivel == 'AMARILLO' %}rgba(250,204,21,.34){% else %}rgba(34,197,94,.34){% endif %};">
+  <div class="flex shrink-0 items-center justify-between pt-1 text-xs text-white/70">
+    <a href="{% url 'administrar_llamadas' %}" aria-label="Regresar al inicio" class="rounded-full px-3 py-2 hover:bg-white/10">← Inicio</a>
+    <span class="font-bold tracking-widest">TRANQUILÍZATE</span>
+    <span class="rounded-full bg-white/10 px-3 py-1">{{ llamada.identificador }}</span>
+  </div>
+
+  <div class="flex min-h-0 flex-1 flex-col items-center px-2 pb-1 pt-1 text-center">
+    <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-white/20 bg-white/10 text-3xl shadow-inner" aria-hidden="true">☎</div>
+    <p class="mt-2 text-xs font-semibold uppercase tracking-[.18em] text-white/65">Llamada entrante</p>
+    <h1 class="mt-1 break-all text-2xl font-bold tracking-tight">{{ llamada.numero_telefonico }}</h1>
+    <p class="mt-1 rounded-full px-3 py-1 text-xs font-extrabold {% if clasificacion_riesgo.nivel == 'ROJO' %}bg-red-500/20 text-red-200{% elif clasificacion_riesgo.nivel == 'AMARILLO' %}bg-yellow-400/20 text-yellow-100{% else %}bg-green-500/20 text-green-200{% endif %}">
+      {% if clasificacion_riesgo.nivel == 'ROJO' %}RIESGO ALTO{% elif clasificacion_riesgo.nivel == 'AMARILLO' %}RIESGO MEDIO{% else %}RIESGO BAJO{% endif %}
+    </p>
+    <section class="mt-3 w-full shrink rounded-2xl border border-white/15 bg-white/10 p-3 text-left shadow-lg backdrop-blur-sm" aria-live="polite">
+      <div class="flex items-center justify-between gap-3">
+        <h2 class="text-sm font-extrabold">Resumen de la llamada</h2>
+        <span aria-hidden="true" class="text-base">🔊</span>
+      </div>
+      <p class="mt-1 line-clamp-3 text-xs leading-4 text-white/90">{{ resumen.texto_resumen|default:resumen.explicacion }}</p>
+      <p class="mt-1 border-t border-white/15 pt-1 text-xs leading-4 text-white/75 line-clamp-2">{{ resumen.explicacion|default:'Si no reconoces a quien llama, no compartas datos personales ni códigos.' }}</p>
+      <button id="repeat-summary" type="button" class="mt-2 inline-flex min-h-9 items-center justify-center rounded-lg bg-white/15 px-3 text-xs font-bold text-white" data-tts-action="play" data-tts-text="{% if clasificacion_riesgo.nivel == 'ROJO' %}Alerta. Riesgo alto. {% elif clasificacion_riesgo.nivel == 'AMARILLO' %}Precaución. Riesgo medio. {% else %}Riesgo bajo. {% endif %}{{ resumen.texto_resumen|default:resumen.explicacion|escapejs }}" data-tts-lang="es-MX">Escuchar resumen otra vez</button>
+    </section>
+
+    <div class="mt-2 w-full shrink-0 rounded-xl border border-white/10 bg-black/15 px-3 py-2 text-left">
+      <p class="text-[10px] font-bold uppercase tracking-wider text-white/60">Quién llama</p>
+      <p class="mt-0.5 truncate text-xs font-semibold">{{ resumen.identidad_declarada|default:'No identificado' }}{% if resumen.institucion %} · {{ resumen.institucion }}{% endif %}</p>
+    </div>
+
+    <form method="post" action="{% url 'responder_alerta_riesgo' pk=llamada.pk %}" class="mt-auto w-full shrink-0 pt-2">
+      {% csrf_token %}
+      <div class="grid grid-cols-2 gap-7">
+        <button type="submit" name="accion" value="rechazar" class="flex flex-col items-center gap-1 text-xs font-semibold text-white/90" aria-label="Rechazar llamada">
+          <span class="flex h-16 w-16 rotate-[135deg] items-center justify-center rounded-full bg-red-600 shadow-xl shadow-red-950/40"><svg class="h-7 w-7" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20a1 1 0 0 1-1 1C10.61 21 3 13.39 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2z"/></svg></span>
+          <span>Rechazar</span>
+        </button>
+        <button type="submit" name="accion" value="aceptar" class="flex flex-col items-center gap-1 text-xs font-semibold text-white/90" aria-label="Contestar llamada">
+          <span class="flex h-16 w-16 items-center justify-center rounded-full bg-green-600 shadow-xl shadow-green-950/40"><svg class="h-7 w-7" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20a1 1 0 0 1-1 1C10.61 21 3 13.39 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2z"/></svg></span>
+          <span>Contestar</span>
+        </button>
+      </div>
+      <p class="mt-2 text-center text-[10px] text-white/55">La decisión se guardará en la aplicación.</p>
+    </form>
+  </div>
+</section>
+<script>
+(() => {
+  const panel = document.getElementById('incoming-call');
+  const summary = (panel.dataset.summary || '').trim();
+  const key = `incoming-summary-${panel.dataset.callId}`;
+  if (!summary || !('speechSynthesis' in window) || sessionStorage.getItem(key)) return;
+  sessionStorage.setItem(key, 'played');
+  const speak = () => {
+    const utterance = new SpeechSynthesisUtterance(summary);
+    utterance.lang = 'es-MX';
+    utterance.rate = 1.03;
+    const voice = speechSynthesis.getVoices().find((item) => item.lang.toLowerCase().startsWith('es-mx'));
+    if (voice) utterance.voice = voice;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(utterance);
+  };
+  window.setTimeout(speak, 450);
+})();
+</script>
+{% endblock %}

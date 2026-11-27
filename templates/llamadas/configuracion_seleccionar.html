@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}Seleccionar dispositivo{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-xl space-y-4">
+  <h1 class="text-2xl font-extrabold text-brand-navy">¿A quién vas a ayudar?</h1>
+  <p class="text-base text-slate-700">Selecciona el Adulto mayor cuyo dispositivo tienes autorización para configurar.</p>
+  {% for relacion in relaciones %}
+    <a href="{% url 'configuracion_aplicacion' adulto_id=relacion.adulto_mayor_id %}" class="block rounded-2xl border border-slate-200 bg-white p-5 text-lg font-bold text-brand-navy shadow-sm">{{ relacion.adulto_mayor.get_full_name|default:relacion.adulto_mayor.username }} <span class="float-right" aria-hidden="true">›</span></a>
+  {% endfor %}
+</section>
+{% endblock %}

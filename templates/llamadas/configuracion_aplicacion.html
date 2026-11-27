@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block title %}Configurar protección{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-xl space-y-4 pb-3">
+  <a href="{% url 'administrar_llamadas' %}" class="inline-flex min-h-12 items-center text-base font-bold text-brand-header">← Panel</a>
+  <header class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+    <p class="text-sm font-bold uppercase tracking-wide text-brand-header">Configuración inicial</p>
+    <h1 class="mt-1 text-2xl font-extrabold text-slate-900">Protección para {{ adulto.get_full_name|default:adulto.username }}</h1>
+    <p class="mt-2 text-base leading-relaxed text-slate-700">Sigue los pasos. Los permisos del teléfono solo los puede confirmar Android.</p>
+    <div class="mt-4 flex items-center justify-between text-sm font-bold text-slate-600"><span>Paso {{ indice_paso|add:1 }} de {{ total_pasos }}</span><span>{{ progreso }}%</span></div>
+    <div class="mt-2 h-3 overflow-hidden rounded-full bg-slate-200" role="progressbar" aria-label="Progreso de configuración" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ progreso }}"><div class="h-full rounded-full bg-brand-header" style="width: {{ progreso }}%"></div></div>
+    <ol class="mt-4 grid grid-cols-5 gap-1 text-center text-[11px] font-semibold text-slate-500">
+      {% for codigo, nombre in pasos %}<li class="rounded-lg px-1 py-2 {% if codigo == paso %}bg-blue-100 text-brand-navy{% endif %}">{{ nombre }}</li>{% endfor %}
+    </ol>
+  </header>
+
+  {% if paso == 'bienvenida' %}
+    <article class="rounded-2xl border border-blue-200 bg-blue-50 p-5">
+      <h2 class="text-xl font-extrabold text-brand-navy">Bienvenida</h2>
+      <p class="mt-2 text-lg leading-relaxed text-slate-700">Te guiaremos para revisar permisos, reutilizar los contactos de confianza y activar las notificaciones de protección.</p>
+      <p class="mt-3 text-base leading-relaxed text-slate-700">Esta página registra preferencias. No puede cambiar directamente los permisos del sistema Android.</p>
+    </article>
+
+  {% elif paso == 'permisos' %}
+    <article class="space-y-3 rounded-2xl border border-slate-200 bg-white p-5">
+      <h2 class="text-xl font-extrabold text-slate-900">Revisar permisos</h2>
+      <p class="text-base leading-relaxed text-slate-700">Los estados se reportan desde el dispositivo. Aquí no se conceden permisos automáticamente.</p>
+      {% for permiso in estado.permisos %}
+        <div class="rounded-xl border border-slate-200 p-4">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h3 class="text-base font-bold text-slate-900">{{ permiso.nombre }}{% if permiso.esencial %} <span class="text-red-700">(esencial)</span>{% else %} <span class="text-slate-500">(opcional)</span>{% endif %}</h3>
+            <span class="rounded-full px-3 py-1 text-sm font-bold {% if permiso.estado == 'CONCEDIDO' %}bg-emerald-100 text-emerald-800{% elif permiso.estado == 'DENEGADO' or permiso.estado == 'NO_DISPONIBLE' %}bg-red-100 text-red-800{% else %}bg-amber-100 text-amber-800{% endif %}">{{ permiso.get_estado_display }}</span>
+          </div>
+          <p class="mt-1 text-sm text-slate-600">{% if permiso.origen == 'ANDROID' %}Estado reportado por Android{% else %}Pendiente de confirmación del dispositivo{% endif %}</p>
+          <form method="post" class="mt-3 flex flex-wrap items-end gap-2">
+            {% csrf_token %}<input type="hidden" name="paso" value="permisos"><input type="hidden" name="accion" value="actualizar_permiso"><input type="hidden" name="codigo" value="{{ permiso.codigo }}">
+            <label class="min-w-0 flex-1 text-sm font-semibold text-slate-700">Registrar estado
+              <select name="estado" class="mt-1 min-h-12 w-full rounded-lg border-slate-300 text-base">
+                {% for valor, etiqueta in estados_permiso %}<option value="{{ valor }}" {% if permiso.estado == valor %}selected{% endif %}>{{ etiqueta }}</option>{% endfor %}
+              </select>
+            </label>
+            <button class="min-h-12 rounded-xl bg-slate-800 px-4 text-sm font-bold text-white">Guardar</button>
+          </form>
+        </div>
+      {% endfor %}
+      <p class="rounded-xl bg-amber-50 p-3 text-sm leading-relaxed text-amber-900">Un permiso esencial pendiente impide completar la configuración. Cuando exista la app Android, deberá reportar el estado real.</p>
+      <a href="{% url 'ayuda_tema' tema='permisos' %}?volver={{ request.get_full_path|urlencode }}" class="inline-flex min-h-12 items-center text-base font-bold text-brand-header">Ayuda sobre permisos</a>
+    </article>
+
+  {% elif paso == 'contactos' %}
+    <article class="space-y-3 rounded-2xl border border-slate-200 bg-white p-5">
+      <h2 class="text-xl font-extrabold text-slate-900">Contactos de confianza</h2>
+      <p class="text-base leading-relaxed text-slate-700">Se usa la agenda ya registrada para {{ adulto.get_full_name|default:adulto.username }}. No se crea una lista separada.</p>
+      <div class="rounded-xl {% if estado.contactos_activos %}bg-emerald-50 text-emerald-900{% else %}bg-amber-50 text-amber-900{% endif %} p-4 text-base font-bold">{{ estado.contactos_activos }} contacto(s) de confianza activo(s)</div>
+      <ul class="space-y-3">{% for contacto in contactos %}<li class="flex min-w-0 items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3"><span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-base font-extrabold text-emerald-900" aria-hidden="true">{{ contacto.nombre|slice:':2'|upper }}</span><span class="min-w-0"><strong class="block break-words text-base text-slate-900">{{ contacto.nombre }}</strong><span class="mt-0.5 block break-all text-base font-semibold text-brand-header">{{ contacto.numero_telefonico }}</span></span></li>{% empty %}<li class="rounded-xl border border-dashed border-slate-300 p-4 text-center text-base text-slate-600">Todavía no hay contactos activos.</li>{% endfor %}</ul>
+      <a href="{{ contactos_url }}" class="flex min-h-14 items-center justify-center rounded-xl bg-brand-header px-5 py-3 text-center text-base font-bold text-white">Administrar contactos existentes</a>
+      <a href="{% url 'ayuda_tema' tema='contactos' %}?volver={{ request.get_full_path|urlencode }}" class="inline-flex min-h-12 items-center text-base font-bold text-brand-header">Ayuda sobre contactos</a>
+    </article>
+
+  {% elif paso == 'notificaciones' %}
+    <article class="rounded-2xl border border-slate-200 bg-white p-5">
+      <h2 class="text-xl font-extrabold text-slate-900">Notificaciones</h2>
+      <p class="mt-2 text-base leading-relaxed text-slate-700">Activa la preferencia para recibir avisos de protección. Android debe conceder el permiso de notificaciones en el dispositivo.</p>
+      <form method="post" class="mt-4 space-y-4">
+        {% csrf_token %}<input type="hidden" name="paso" value="notificaciones"><input type="hidden" name="accion" value="guardar_notificaciones">
+        <label class="flex min-h-14 items-center gap-3 rounded-xl border border-slate-200 p-4 text-base font-bold text-slate-800"><input type="checkbox" name="notificaciones_habilitadas" class="h-6 w-6 rounded" {% if configuracion.notificaciones_habilitadas %}checked{% endif %}>Quiero recibir notificaciones de protección</label>
+        <button class="min-h-14 w-full rounded-xl bg-brand-header px-5 py-3 text-base font-bold text-white">Guardar preferencia</button>
+      </form>
+      <p class="mt-3 text-sm text-slate-600">Preferencia: {% if estado.notificaciones_validas %}activada{% else %}pendiente{% endif %}</p>
+      <a href="{% url 'configurar_notificaciones' adulto_id=adulto.pk %}" class="mt-3 flex min-h-14 items-center justify-center rounded-xl border border-brand-header px-5 py-3 text-base font-bold text-brand-header">Seleccionar contacto que recibirá avisos</a>
+      <a href="{% url 'ayuda_tema' tema='notificaciones-familiares' %}?volver={{ request.get_full_path|urlencode }}" class="mt-2 inline-flex min-h-12 items-center text-base font-bold text-brand-header">Ayuda sobre notificaciones</a>
+    </article>
+
+  {% else %}
+    <article class="space-y-4 rounded-2xl border p-5 {% if estado.estado == 'COMPLETA' %}border-emerald-300 bg-emerald-50{% elif estado.estado == 'REQUIERE_ATENCION' %}border-red-300 bg-red-50{% else %}border-amber-300 bg-amber-50{% endif %}">
+      <h2 class="text-xl font-extrabold {% if estado.estado == 'COMPLETA' %}text-emerald-900{% elif estado.estado == 'REQUIERE_ATENCION' %}text-red-900{% else %}text-amber-900{% endif %}">{% if estado.estado == 'COMPLETA' %}Configuración completa{% elif estado.estado == 'REQUIERE_ATENCION' %}Requiere atención{% else %}Configuración incompleta{% endif %}</h2>
+      {% if estado.completa %}<p class="text-base leading-relaxed text-slate-700">Los requisitos actuales están cubiertos. Familiar responsable: {{ configuracion.completado_por|default:request.user }}{% if configuracion.completado_en %}; fecha: {{ configuracion.completado_en|date:'d/m/Y H:i' }}{% endif %}.</p>{% endif %}
+      {% if estado.requiere_atencion %}<ul class="list-disc space-y-1 pl-5 text-base text-red-900">{% for aviso in estado.requiere_atencion %}<li>{{ aviso }}</li>{% endfor %}</ul>{% endif %}
+      {% if estado.faltantes %}<h3 class="text-base font-bold text-slate-900">Pendiente:</h3><ul class="list-disc space-y-1 pl-5 text-base text-slate-800">{% for pendiente in estado.faltantes %}<li>{{ pendiente }}</li>{% endfor %}</ul>{% endif %}
+      {% if estado.completa and not configuracion.completado_en %}<form method="post">{% csrf_token %}<input type="hidden" name="paso" value="confirmacion"><input type="hidden" name="accion" value="finalizar"><button class="min-h-14 w-full rounded-xl bg-emerald-700 px-5 py-3 text-base font-bold text-white">Confirmar y registrar configuración</button></form>{% elif not estado.completa %}<form method="post">{% csrf_token %}<input type="hidden" name="paso" value="confirmacion"><input type="hidden" name="accion" value="finalizar"><button class="min-h-14 w-full rounded-xl bg-brand-header px-5 py-3 text-base font-bold text-white">Revisar configuración</button></form>{% endif %}
+    </article>
+  {% endif %}
+
+  <nav aria-label="Navegación de pasos" class="flex gap-3">
+    {% if indice_paso > 0 %}<form method="post" class="flex-1">{% csrf_token %}<input type="hidden" name="paso" value="{{ paso }}"><input type="hidden" name="accion" value="anterior"><button class="min-h-14 w-full rounded-xl border border-slate-300 bg-white px-4 text-base font-bold text-slate-800">← Anterior</button></form>{% endif %}
+    {% if indice_paso < total_pasos|add:'-1' %}<form method="post" class="flex-1">{% csrf_token %}<input type="hidden" name="paso" value="{{ paso }}"><input type="hidden" name="accion" value="siguiente"><button class="min-h-14 w-full rounded-xl bg-brand-header px-4 text-base font-bold text-white">Siguiente →</button></form>{% endif %}
+  </nav>
+
+  <section class="space-y-2 rounded-2xl border border-slate-200 bg-white p-4">
+    <h2 class="text-base font-bold text-slate-900">Más información</h2>
+    <div class="grid grid-cols-1 gap-2 sm:grid-cols-3">
+      <a class="min-h-12 rounded-lg bg-slate-100 p-3 text-center text-sm font-bold text-brand-navy" href="{% url 'ayuda' %}?volver={{ request.get_full_path|urlencode }}">Ayuda y soporte</a>
+      <a class="min-h-12 rounded-lg bg-slate-100 p-3 text-center text-sm font-bold text-brand-navy" href="{% url 'configuracion_recurso' recurso='sugerencias' %}">Sugerencias</a>
+      <a class="min-h-12 rounded-lg bg-slate-100 p-3 text-center text-sm font-bold text-brand-navy" href="{% url 'configuracion_recurso' recurso='acerca' %}">Acerca de la app</a>
+    </div>
+  </section>
+</section>
+{% endblock %}

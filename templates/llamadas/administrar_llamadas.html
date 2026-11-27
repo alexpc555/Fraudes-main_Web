@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+
+{% block title %}Panel principal{% endblock %}
+
+{% block content %}
+<section class="space-y-4 pt-1">
+  <h1 class="px-1 text-2xl font-black text-brand-header">Panel de llamadas</h1>
+  <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+    <div class="flex items-center space-x-4">
+      <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCrDkpZYGaLhkh4V3Bkq6qf8R_T0QEyNo-6UxwvPYbufW4fuIBUiczcX7gPjToMvd8CMP1pszU5c3w6_vZ-xUfYF0owTLvyiZnwMG_x5wLMMyPPbTkdxV4t2rnP-zq5pcWG94AOEXrokI7mpj1g47NG2Ga3yWNhcU0Djajjbw69jaKaa_P4j2zoCxJR8IO7SgeCtWsX4Z-uEUjvrtc2AsapgklpgJIqxQP9TApUAkUaCHm1Pea4MD3pUA" alt="Logo Tranquilízate" class="w-16 h-16 object-contain rounded-xl flex-shrink-0">
+      <div class="flex-1">
+        <h2 class="text-2xl font-black text-brand-header tracking-tight leading-none mb-1">Tranquilízate</h2>
+        <p class="text-xs font-semibold text-brand-header opacity-90 leading-snug">Tu aliado contra llamadas fraudulentas</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-brand-lightBlue/80 rounded-2xl p-4 border border-brand-accent/20">
+    <h3 class="text-xl font-black text-brand-dark tracking-tight leading-snug">Hola</h3>
+    <p class="text-sm font-bold text-brand-dark opacity-90 leading-tight mt-0.5">Aquí puedes protegerte de llamadas fraudulentas</p>
+  </div>
+
+  <div class="bg-brand-mint border border-emerald-200/80 rounded-2xl p-3.5 flex items-start space-x-3">
+    <div class="mt-0.5 shrink-0 text-brand-mintText">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="M9 12l2 2 4-4"></path></svg>
+    </div>
+    <div class="flex-1">
+      <h4 class="text-xs font-bold text-brand-mintText tracking-wide uppercase">Análisis de llamadas disponible</h4>
+      <p class="text-xs text-brand-mintText/90 font-medium leading-relaxed mt-0.5">Registra una llamada o sube su audio para consultar señales y nivel de riesgo.</p>
+    </div>
+  </div>
+
+  {% if request.session.rol_prueba == 'usuario' %}
+  <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4" role="status">
+    <div class="flex items-center justify-between gap-2">
+      <p class="font-bold text-emerald-900">Protección activa para la llamada de prueba</p>
+      <a href="{% url 'inicio_roles' %}" class="shrink-0 text-xs font-bold text-emerald-900 underline">Cambiar rol</a>
+    </div>
+    <p id="demo-call-status" class="mt-1 text-sm text-emerald-800">Esperando que termine la evaluación del llamante…</p>
+    <button id="enable-demo-voice" type="button" class="mt-3 min-h-11 rounded-xl border border-emerald-300 bg-white px-3 text-sm font-bold text-emerald-900">Activar audio de alertas</button>
+  </div>
+  <script>
+    (() => {
+      let abriendo = false;
+      const audioButton = document.getElementById('enable-demo-voice');
+      if (localStorage.getItem('antifraude-voz-activa') === '1') audioButton.textContent = 'Audio de alertas activado';
+      audioButton.addEventListener('click', () => {
+        if (!('speechSynthesis' in window)) {
+          audioButton.textContent = 'Audio no disponible en este navegador';
+          return;
+        }
+        localStorage.setItem('antifraude-voz-activa', '1');
+        const inicio = new SpeechSynthesisUtterance('Audio de alertas activado.');
+        inicio.lang = 'es-MX';
+        speechSynthesis.cancel();
+        speechSynthesis.speak(inicio);
+        audioButton.textContent = 'Audio de alertas activado';
+      });
+      async function buscarLlamadaEvaluada() {
+        if (abriendo) return;
+        try {
+          const response = await fetch('{% url "estado_llamada_prueba" %}', { cache: 'no-store' });
+          if (!response.ok) return;
+          const data = await response.json();
+          if (!data.activa) return;
+          abriendo = true;
+          document.getElementById('demo-call-status').textContent = 'Llamada entrante. Abriendo el resumen de seguridad…';
+          if (navigator.vibrate) navigator.vibrate([250, 150, 250]);
+          window.location.assign(data.url);
+        } catch (_) { /* Se vuelve a intentar en el próximo intervalo. */ }
+      }
+      buscarLlamadaEvaluada();
+      window.setInterval(buscarLlamadaEvaluada, 1500);
+    })();
+  </script>
+  {% endif %}
+
+  <div class="grid grid-cols-3 gap-3">
+    <div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-200">
+      <div class="text-[10px] uppercase tracking-wide text-slate-500">Total</div>
+      <div class="mt-2 text-2xl font-black text-brand-header">{{ estadisticas.total }}</div>
+    </div>
+    <div class="bg-amber-50 rounded-2xl p-3 shadow-sm border border-amber-200">
+      <div class="text-[10px] uppercase tracking-wide text-amber-700">Pendientes</div>
+      <div class="mt-2 text-2xl font-black text-amber-700">{{ estadisticas.pendientes }}</div>
+    </div>
+    <div class="bg-emerald-50 rounded-2xl p-3 shadow-sm border border-emerald-200">
+      <div class="text-[10px] uppercase tracking-wide text-emerald-700">Finalizadas</div>
+      <div class="mt-2 text-2xl font-black text-emerald-700">{{ estadisticas.finalizadas }}</div>
+    </div>
+  </div>
+
+  <div class="space-y-3">
+    <div class="flex items-center justify-between px-1">
+      <h3 class="text-lg font-black text-brand-dark">Acciones rápidas</h3>
+      <a href="{% url 'registrar_llamada' %}" class="text-xs font-bold text-brand-header">Registrar</a>
+    </div>
+
+    <a href="{% url 'prueba_roles' %}" class="block rounded-2xl border-2 border-brand-accent/30 bg-brand-lightBlue p-4 shadow-sm">
+      <span class="block text-base font-black text-brand-header">Prueba de llamada con dos roles</span>
+      <span class="mt-1 block text-sm leading-5 text-slate-600">Abre la vista de quien llama y la del usuario para probar el micrófono y la alerta.</span>
+    </a>
+
+    <a href="{% url 'familiar_opcional' %}" class="block rounded-2xl border border-blue-200 bg-blue-50 p-4 shadow-sm">
+      <span class="block text-base font-bold text-brand-navy">Agregar familiar de confianza <span class="text-sm font-semibold text-slate-600">(opcional)</span></span>
+      <span class="mt-1 block text-sm leading-5 text-slate-600">Puede recibir avisos de riesgo. No necesita crear una cuenta y la aplicación funciona sin este paso.</span>
+    </a>
+    <a href="{% url 'ayuda' %}?volver={{ request.get_full_path|urlencode }}" class="flex min-h-14 items-center justify-between rounded-2xl border border-slate-200 bg-white p-4 text-base font-bold text-brand-header shadow-sm">
+      <span>Ayuda sobre la aplicación</span><span aria-hidden="true" class="text-2xl">›</span>
+    </a>
+
+    <a href="{% url 'lista_contactos' %}" class="block w-full bg-white border border-slate-200 rounded-2xl p-3.5 flex items-center justify-between shadow-sm">
+      <div class="flex items-center space-x-3.5">
+        <div class="w-11 h-11 rounded-xl bg-brand-lightBlue flex items-center justify-center text-brand-header">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"></path></svg>
+        </div>
+        <div>
+          <span class="block text-lg font-black text-brand-navy leading-tight">Números seguros</span>
+          <span class="block text-xs font-semibold text-slate-500">Tus contactos de confianza</span>
+        </div>
+      </div>
+      <svg class="w-6 h-6 text-brand-header" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    </a>
+
+    <a href="{% url 'lista_numeros_reportados' %}" class="block w-full bg-white border border-slate-200 rounded-2xl p-3.5 flex items-center justify-between shadow-sm">
+      <div class="flex items-center space-x-3.5">
+        <div class="w-11 h-11 rounded-xl bg-brand-lightBlue flex items-center justify-center text-brand-header">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12h18M12 3v18" stroke-linecap="round"></path></svg>
+        </div>
+        <div>
+          <span class="block text-lg font-black text-brand-navy leading-tight">Números reportados</span>
+          <span class="block text-xs font-semibold text-slate-500">Verificación y alertas</span>
+        </div>
+      </div>
+      <svg class="w-6 h-6 text-brand-header" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    </a>
+  </div>
+
+  <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="text-lg font-black text-brand-dark">Historial</h3>
+      <a href="{% url 'registrar_llamada' %}" class="text-xs font-bold text-brand-header">Ver más</a>
+    </div>
+
+    <div class="space-y-2.5">
+      {% for llamada in llamadas|slice:':4' %}
+        <a href="{% url 'detalle_llamada' llamada.pk %}" class="block rounded-2xl border border-slate-200 p-3 hover:bg-slate-50">
+          <div class="flex items-center justify-between gap-3">
+            <div>
+              <p class="text-sm font-bold text-slate-800 tracking-tight">{{ llamada.numero_telefonico }}</p>
+              <p class="text-[11px] text-slate-500">{{ llamada.fecha_hora_recepcion|date:'d/m/Y' }} · {{ llamada.fecha_hora_recepcion|time:'H:i' }}</p>
+            </div>
+            <span class="px-2 py-1 rounded-full text-[10px] font-bold {% if llamada.estado == 'PENDIENTE_DE_EVALUACION' %}bg-red-100 text-red-700{% elif llamada.estado == 'FINALIZADA' %}bg-emerald-100 text-emerald-700{% else %}bg-amber-100 text-amber-700{% endif %}">
+              {{ llamada.get_estado_display }}
+            </span>
+          </div>
+        </a>
+      {% empty %}
+        <div class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4 text-center text-sm text-slate-500">No hay llamadas registradas todavía.</div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

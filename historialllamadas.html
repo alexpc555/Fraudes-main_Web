@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Historial de llamadas - Tranquilízate</title>
+<!-- Tailwind CSS CDN with forms and container queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              navy: '#053d6e',
+              deep: '#04345d',
+              light: '#f1f6fb',
+              accent: '#38bdf8'
+            },
+            status: {
+              redBg: '#fee2e2',
+              redText: '#dc2626',
+              yellowBg: '#fef3c7',
+              yellowText: '#d97706',
+              greenBg: '#dcfce7',
+              greenText: '#16a34a'
+            }
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Text"', '"SF Pro Display"', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif']
+          },
+          boxShadow: {
+            'card': '0 2px 8px -1px rgba(5, 61, 110, 0.08), 0 1px 3px -1px rgba(0, 0, 0, 0.04)',
+            'pill': '0 1px 2px rgba(0, 0, 0, 0.05)'
+          }
+        }
+      }
+    }
+  </script>
+<!-- Custom styles for iOS mobile layout & animations -->
+<style data-purpose="mobile-frame">
+    body {
+      background-color: #0b1e36;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    .ios-device-container {
+      width: 100%;
+      max-width: 390px;
+      height: 844px;
+      background-color: #f7fafc;
+      border-radius: 44px;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.5), 0 0 0 10px #1e293b;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    @media (max-width: 420px) {
+      body {
+        background-color: #f7fafc;
+      }
+      .ios-device-container {
+        max-width: 100%;
+        height: 100vh;
+        border-radius: 0;
+        box-shadow: none;
+      }
+    }
+  </style>
+<style data-purpose="scrollbar-handling">
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="p-0 sm:p-6">
+<!-- BEGIN: DeviceFrame -->
+<div class="ios-device-container flex flex-col justify-between" data-purpose="app-viewport">
+<!-- Top Decorative Status Bar (iOS) -->
+<div class="bg-[#053d6e] text-white px-7 pt-3.5 pb-1 flex justify-between items-center text-xs font-semibold z-20" data-purpose="ios-statusbar">
+<span>9:41</span>
+<!-- Dynamic Island / Speaker notch placeholder -->
+<div class="w-20 h-4 bg-black/25 rounded-full mx-auto -mt-1 hidden sm:block"></div>
+<div class="flex items-center space-x-1.5">
+<!-- Cellular Bars -->
+<svg class="w-3.5 h-3.5 fill-current" viewbox="0 0 24 24"><path d="M2 17h3v4H2v-4zm5-4h3v8H7v-8zm5-4h3v12h-3V9zm5-5h3v17h-3V4z"></path></svg>
+<!-- Wi-Fi -->
+<svg class="w-3.5 h-3.5 fill-current" viewbox="0 0 24 24"><path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98C20.93 5.9 16.69 4 12 4zm0 3.5c3.74 0 7.12 1.52 9.58 3.98L12 19.07 2.42 11.48C4.88 9.02 8.26 7.5 12 7.5z"></path></svg>
+<!-- Battery Icon -->
+<div class="w-5 h-2.5 border border-white rounded-[3px] p-0.5 flex items-center">
+<div class="h-full w-3.5 bg-white rounded-[1px]"></div>
+</div>
+</div>
+</div>
+<!-- BEGIN: HeaderSection -->
+<header class="bg-[#053d6e] text-white px-5 pt-3 pb-6 relative shadow-md" data-purpose="app-header">
+<!-- Top Navigation Icons & Brand -->
+<div class="flex items-center justify-between mb-4">
+<button aria-label="Volver atrás" class="p-1 -ml-1 text-white hover:text-sky-200 transition-colors focus:outline-none" id="btn-back">
+<svg class="w-6 h-6 stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<span class="text-base font-medium tracking-tight">Tranquilízate</span>
+<button aria-label="Seguridad" class="p-1 -mr-1 text-white hover:text-sky-200 transition-colors focus:outline-none">
+<!-- Shield icon -->
+<svg class="w-5 h-5 fill-none stroke-current stroke-2" viewbox="0 0 24 24">
+<path d="M12 2.25c4.7 0 8.25 2.25 8.25 2.25v6.75c0 5.25-3.75 9.75-8.25 10.5-4.5-.75-8.25-5.25-8.25-10.5V4.5S7.3 2.25 12 2.25z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</div>
+<!-- Main Title & Tagline -->
+<div class="px-1 text-left">
+<h1 class="text-2xl font-bold tracking-tight text-white mb-0.5">Historial de llamadas</h1>
+<p class="text-xs text-sky-100 font-normal">Tu tranquilidad, a tu manera.</p>
+</div>
+</header>
+<!-- END: HeaderSection -->
+<!-- BEGIN: ContentArea -->
+<main class="flex-1 bg-[#f8fafc] overflow-y-auto px-4 py-3 hide-scrollbar flex flex-col justify-between" data-purpose="call-history-content">
+<div>
+<!-- Filter Tabs / Pills -->
+<!-- These buttons filter the call list below -->
+<nav aria-label="Filtros de llamadas" class="flex items-center space-x-1.5 py-1.5 mb-2 overflow-x-auto hide-scrollbar" data-purpose="filter-pills">
+<button class="filter-tab px-3.5 py-1 rounded-full text-xs font-semibold bg-[#bae6fd] text-[#0369a1] shadow-sm transition-all focus:outline-none" data-filter="all">
+            Todas
+          </button>
+<button class="filter-tab px-3 py-1 rounded-full text-xs font-semibold bg-[#fee2e2] text-[#dc2626] border border-red-200 transition-all hover:bg-red-100 focus:outline-none" data-filter="high">
+            Riesgo alto
+          </button>
+<button class="filter-tab px-3 py-1 rounded-full text-xs font-semibold bg-[#fef3c7] text-[#d97706] border border-amber-200 transition-all hover:bg-amber-100 focus:outline-none" data-filter="medium">
+            Riesgo medio
+          </button>
+<button class="filter-tab px-3 py-1 rounded-full text-xs font-semibold bg-[#dcfce7] text-[#16a34a] border border-emerald-200 transition-all hover:bg-emerald-100 focus:outline-none" data-filter="safe">
+            Seguro
+          </button>
+</nav>
+<!-- Protection Status Indicator -->
+<div class="flex items-center justify-center space-x-1.5 mb-4 text-[11px] font-medium text-emerald-700" data-purpose="shield-status">
+<svg class="w-3.5 h-3.5 text-emerald-600 fill-none stroke-current stroke-2" viewbox="0 0 24 24">
+<path d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>La protección está activa</span>
+</div>
+<!-- Phone Calls List -->
+<div class="space-y-2.5" data-purpose="call-items-container" id="calls-list">
+<!-- Call Item 1: High Risk -->
+<div class="call-card bg-white rounded-2xl px-3.5 py-2.5 border border-slate-100 shadow-[0_2px_6px_rgba(0,0,0,0.03)] flex items-center justify-between hover:border-slate-300 transition-all cursor-pointer" data-category="high">
+<div class="flex items-center space-x-3">
+<div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500">
+<svg class="w-4 h-4 fill-none stroke-current stroke-2" viewbox="0 0 24 24">
+<path d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<div>
+<p class="text-[13px] font-bold text-slate-800 tracking-tight leading-tight">+52 12 464 52 415</p>
+<p class="text-[10px] text-slate-400 font-medium">12 mar 2025 · 14:32</p>
+</div>
+</div>
+<div class="flex items-center space-x-2">
+<!-- High Risk Siren Icon -->
+<div class="w-7 h-7 rounded-full bg-red-100 flex items-center justify-center text-red-600 shadow-sm" title="Riesgo alto">
+<svg class="w-4 h-4 animate-pulse" fill="currentColor" viewbox="0 0 24 24">
+<path d="M12 2a1 1 0 0 1 1 1v1.055a7.002 7.002 0 0 1 6 6.945v3.172l1.657 2.485A1 1 0 0 1 19.828 18H4.172a1 1 0 0 1-.829-1.343L5 14.172V11a7.002 7.002 0 0 1 6-6.945V3a1 1 0 0 1 1-1zm0 18a3 3 0 0 1-2.995-2.824L9 17h6a3 3 0 0 1-3 3z"></path>
+</svg>
+</div>
+<svg class="w-4 h-4 text-slate-300 stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M8.25 4.5l7.5 7.5-7.5 7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</div>
+<!-- Call Item 2: Medium Risk -->
+<div class="call-card bg-white rounded-2xl px-3.5 py-2.5 border border-slate-100 shadow-[0_2px_6px_rgba(0,0,0,0.03)] flex items-center justify-between hover:border-slate-300 transition-all cursor-pointer" data-category="medium">
+<div class="flex items-center space-x-3">
+<div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500">
+<svg class="w-4 h-4 fill-none stroke-current stroke-2" viewbox="0 0 24 24">
+<path d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<div>
+<p class="text-[13px] font-bold text-slate-800 tracking-tight leading-tight">+52 12 464 52 415</p>
+<p class="text-[10px] text-slate-400 font-medium">12 mar 2025 · 11:05</p>
+</div>
+</div>
+<div class="flex items-center space-x-2">
+<!-- Medium Risk Warning Triangle Icon -->
+<div class="w-7 h-7 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 shadow-sm" title="Riesgo medio">
+<svg class="w-4 h-4 fill-none stroke-current stroke-[2.5]" viewbox="0 0 24 24">
+<path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<svg class="w-4 h-4 text-slate-300 stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M8.25 4.5l7.5 7.5-7.5 7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</div>
+<!-- Call Item 3: High Risk -->
+<div class="call-card bg-white rounded-2xl px-3.5 py-2.5 border border-slate-100 shadow-[0_2px_6px_rgba(0,0,0,0.03)] flex items-center justify-between hover:border-slate-300 transition-all cursor-pointer" data-category="high">
+<div class="flex items-center space-x-3">
+<div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500">
+<svg class="w-4 h-4 fill-none stroke-current stroke-2" viewbox="0 0 24 24">
+<path d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<div>
+<p class="text-[13px] font-bold text-slate-800 tracking-tight leading-tight">+52 12 464 52 415</p>
+<p class="text-[10px] text-slate-400 font-medium">11 mar 2025 · 18:47</p>
+</div>
+</div>
+<div class="flex items-center space-x-2">
+<div class="w-7 h-7 rounded-full bg-red-100 flex items-center justify-center text-red-600 shadow-sm" title="Riesgo alto">
+<svg class="w-4 h-4" fill="currentColor" viewbox="0 0 24 24">
+<path d="M12 2a1 1 0 0 1 1 1v1.055a7.002 7.002 0 0 1 6 6.945v3.172l1.657 2.485A1 1 0 0 1 19.828 18H4.172a1 1 0 0 1-.829-1.343L5 14.172V11a7.002 7.002 0 0 1 6-6.945V3a1 1 0 0 1 1-1zm0 18a3 3 0 0 1-2.995-2.824L9 17h6a3 3 0 0 1-3 3z"></path>
+</svg>
+</div>
+<svg class="w-4 h-4 text-slate-300 stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M8.25 4.5l7.5 7.5-7.5 7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</div>
+<!-- Call Item 4: Safe Check -->
+<div class="call-card bg-white rounded-2xl px-3.5 py-2.5 border border-slate-100 shadow-[0_2px_6px_rgba(0,0,0,0.03)] flex items-center justify-between hover:border-slate-300 transition-all cursor-pointer" data-category="safe">
+<div class="flex items-center space-x-3">
+<div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500">
+<svg class="w-4 h-4 fill-none stroke-current stroke-2" viewbox="0 0 24 24">
+<path d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<div>
+<p class="text-[13px] font-bold text-slate-800 tracking-tight leading-tight">+52 12 464 52 415</p>
+<p class="text-[10px] text-slate-400 font-medium">11 mar 2025 · 09:12</p>
+</div>
+</div>
+<div class="flex items-center space-x-2">
+<!-- Safe Shield Checkmark Icon -->
+<div class="w-7 h-7 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 shadow-sm" title="Seguro">
+<svg class="w-4 h-4 stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<svg class="w-4 h-4 text-slate-300 stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M8.25 4.5l7.5 7.5-7.5 7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</div>
+<!-- Call Item 5: Safe Check -->
+<div class="call-card bg-white rounded-2xl px-3.5 py-2.5 border border-slate-100 shadow-[0_2px_6px_rgba(0,0,0,0.03)] flex items-center justify-between hover:border-slate-300 transition-all cursor-pointer" data-category="safe">
+<div class="flex items-center space-x-3">
+<div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500">
+<svg class="w-4 h-4 fill-none stroke-current stroke-2" viewbox="0 0 24 24">
+<path d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<div>
+<p class="text-[13px] font-bold text-slate-800 tracking-tight leading-tight">+52 12 464 52 415</p>
+<p class="text-[10px] text-slate-400 font-medium">10 mar 2025 · 20:58</p>
+</div>
+</div>
+<div class="flex items-center space-x-2">
+<div class="w-7 h-7 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 shadow-sm" title="Seguro">
+<svg class="w-4 h-4 stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<svg class="w-4 h-4 text-slate-300 stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M8.25 4.5l7.5 7.5-7.5 7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</div>
+<!-- Call Item 6: High Risk -->
+<div class="call-card bg-white rounded-2xl px-3.5 py-2.5 border border-slate-100 shadow-[0_2px_6px_rgba(0,0,0,0.03)] flex items-center justify-between hover:border-slate-300 transition-all cursor-pointer" data-category="high">
+<div class="flex items-center space-x-3">
+<div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500">
+<svg class="w-4 h-4 fill-none stroke-current stroke-2" viewbox="0 0 24 24">
+<path d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<div>
+<p class="text-[13px] font-bold text-slate-800 tracking-tight leading-tight">+52 12 464 52 415</p>
+<p class="text-[10px] text-slate-400 font-medium">09 mar 2025 · 08:21</p>
+</div>
+</div>
+<div class="flex items-center space-x-2">
+<div class="w-7 h-7 rounded-full bg-red-100 flex items-center justify-center text-red-600 shadow-sm" title="Riesgo alto">
+<svg class="w-4 h-4" fill="currentColor" viewbox="0 0 24 24">
+<path d="M12 2a1 1 0 0 1 1 1v1.055a7.002 7.002 0 0 1 6 6.945v3.172l1.657 2.485A1 1 0 0 1 19.828 18H4.172a1 1 0 0 1-.829-1.343L5 14.172V11a7.002 7.002 0 0 1 6-6.945V3a1 1 0 0 1 1-1zm0 18a3 3 0 0 1-2.995-2.824L9 17h6a3 3 0 0 1-3 3z"></path>
+</svg>
+</div>
+<svg class="w-4 h-4 text-slate-300 stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M8.25 4.5l7.5 7.5-7.5 7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</div>
+</div>
+</div>
+<!-- BEGIN: FooterPrivacyNotice -->
+<footer class="pt-5 pb-3 px-2 text-center" data-purpose="privacy-footer">
+<div class="flex items-center justify-center space-x-1.5 text-slate-400 mb-1">
+<!-- Small Lock Icon -->
+<svg class="w-3.5 h-3.5 fill-none stroke-current stroke-2" viewbox="0 0 24 24">
+<path d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<p class="text-[11px] leading-tight text-slate-500 font-medium">
+            Tu información es privada. Tú decides qué compartir.
+          </p>
+</div>
+</footer>
+<!-- END: FooterPrivacyNotice -->
+</main>
+<!-- END: ContentArea -->
+<!-- iOS Home Indicator bar -->
+<div class="bg-[#f8fafc] pb-2 flex justify-center w-full">
+<div class="w-32 h-1 bg-slate-300 rounded-full"></div>
+</div>
+</div>
+<!-- END: DeviceFrame -->
+<!-- BEGIN: InteractiveModal -->
+<!-- Simple detail modal when tapping on any call item -->
+<div class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden transition-opacity opacity-0" data-purpose="modal-dialog" id="detail-modal">
+<div class="bg-white rounded-3xl p-5 w-full max-w-xs shadow-2xl text-center transform scale-95 transition-transform" id="modal-box">
+<div class="w-12 h-12 rounded-full mx-auto flex items-center justify-center mb-3 bg-red-100 text-red-600" id="modal-icon-container">
+<!-- SVG injected dynamically -->
+</div>
+<h3 class="text-base font-bold text-slate-800" id="modal-number">+52 12 464 52 415</h3>
+<p class="text-xs text-slate-400 mb-3" id="modal-date">12 mar 2025 · 14:32</p>
+<div class="bg-slate-50 p-3 rounded-xl mb-4 text-left border border-slate-100">
+<span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block mb-1">Diagnóstico</span>
+<p class="text-xs text-slate-700 leading-relaxed" id="modal-details">Llamada bloqueada o categorizada por el agente inteligente de Tranquilízate.</p>
+</div>
+<button class="w-full py-2.5 rounded-xl bg-[#053d6e] text-white text-xs font-semibold hover:bg-[#032e54] transition-colors focus:outline-none" id="modal-close-btn">
+        Entendido
+      </button>
+</div>
+</div>
+<!-- END: InteractiveModal -->
+<!-- JavaScript for Category Filtering -->
+<script data-purpose="tab-filtering">
+    document.addEventListener('DOMContentLoaded', () => {
+      const filterButtons = document.querySelectorAll('.filter-tab');
+      const callCards = document.querySelectorAll('.call-card');
+
+      filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const selectedFilter = button.getAttribute('data-filter');
+
+          // Reset styles on all filter buttons
+          filterButtons.forEach(btn => {
+            const filterType = btn.getAttribute('data-filter');
+            btn.classList.remove('bg-[#bae6fd]', 'text-[#0369a1]', 'shadow-sm');
+            
+            // Reapply original soft tone style
+            if (filterType === 'all') {
+              btn.className = 'filter-tab px-3.5 py-1 rounded-full text-xs font-semibold bg-slate-200/60 text-slate-600 transition-all focus:outline-none';
+            } else if (filterType === 'high') {
+              btn.className = 'filter-tab px-3 py-1 rounded-full text-xs font-semibold bg-[#fee2e2] text-[#dc2626] border border-red-200 transition-all focus:outline-none';
+            } else if (filterType === 'medium') {
+              btn.className = 'filter-tab px-3 py-1 rounded-full text-xs font-semibold bg-[#fef3c7] text-[#d97706] border border-amber-200 transition-all focus:outline-none';
+            } else if (filterType === 'safe') {
+              btn.className = 'filter-tab px-3 py-1 rounded-full text-xs font-semibold bg-[#dcfce7] text-[#16a34a] border border-emerald-200 transition-all focus:outline-none';
+            }
+          });
+
+          // Highlight the clicked active button
+          if (selectedFilter === 'all') {
+            button.className = 'filter-tab px-3.5 py-1 rounded-full text-xs font-semibold bg-[#bae6fd] text-[#0369a1] shadow-sm transition-all focus:outline-none';
+          } else {
+            button.classList.add('ring-2', 'ring-offset-1', 'shadow-sm');
+            if (selectedFilter === 'high') button.classList.add('ring-red-400');
+            if (selectedFilter === 'medium') button.classList.add('ring-amber-400');
+            if (selectedFilter === 'safe') button.classList.add('ring-emerald-400');
+          }
+
+          // Filter card visibility
+          callCards.forEach(card => {
+            const category = card.getAttribute('data-category');
+            if (selectedFilter === 'all' || category === selectedFilter) {
+              card.style.display = 'flex';
+            } else {
+              card.style.display = 'none';
+            }
+          });
+        });
+      });
+    });
+  </script>
+<!-- JavaScript for Call Details Modal Interaction -->
+<script data-purpose="call-modal-interactions">
+    document.addEventListener('DOMContentLoaded', () => {
+      const modal = document.getElementById('detail-modal');
+      const modalBox = document.getElementById('modal-box');
+      const closeBtn = document.getElementById('modal-close-btn');
+      const modalNumber = document.getElementById('modal-number');
+      const modalDate = document.getElementById('modal-date');
+      const modalDetails = document.getElementById('modal-details');
+      const modalIconContainer = document.getElementById('modal-icon-container');
+
+      const callCards = document.querySelectorAll('.call-card');
+
+      const descriptions = {
+        high: "Alerta máxima: Esta llamada intentó solicitar códigos bancarios y credenciales sensibles. Bloqueo sugerido.",
+        medium: "Riesgo medio: Número con reportes frecuentes de spam o ventas no solicitadas.",
+        safe: "Número verificado: Contacto seguro o llamada analizada sin indicios de fraude o coerción."
+      };
+
+      callCards.forEach(card => {
+        card.addEventListener('click', () => {
+          const numberText = card.querySelector('p:nth-child(1)').innerText;
+          const dateText = card.querySelector('p:nth-child(2)').innerText;
+          const category = card.getAttribute('data-category');
+
+          modalNumber.innerText = numberText;
+          modalDate.innerText = dateText;
+          modalDetails.innerText = descriptions[category] || "Llamada analizada por la aplicación.";
+
+          // Update icon color based on category
+          if (category === 'high') {
+            modalIconContainer.className = "w-12 h-12 rounded-full mx-auto flex items-center justify-center mb-3 bg-red-100 text-red-600";
+            modalIconContainer.innerHTML = '<svg class="w-6 h-6 animate-pulse" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a1 1 0 0 1 1 1v1.055a7.002 7.002 0 0 1 6 6.945v3.172l1.657 2.485A1 1 0 0 1 19.828 18H4.172a1 1 0 0 1-.829-1.343L5 14.172V11a7.002 7.002 0 0 1 6-6.945V3a1 1 0 0 1 1-1zm0 18a3 3 0 0 1-2.995-2.824L9 17h6a3 3 0 0 1-3 3z"/></svg>';
+          } else if (category === 'medium') {
+            modalIconContainer.className = "w-12 h-12 rounded-full mx-auto flex items-center justify-center mb-3 bg-amber-100 text-amber-600";
+            modalIconContainer.innerHTML = '<svg class="w-6 h-6 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>';
+          } else {
+            modalIconContainer.className = "w-12 h-12 rounded-full mx-auto flex items-center justify-center mb-3 bg-emerald-100 text-emerald-600";
+            modalIconContainer.innerHTML = '<svg class="w-6 h-6 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" /></svg>';
+          }
+
+          modal.classList.remove('hidden');
+          setTimeout(() => {
+            modal.classList.remove('opacity-0');
+            modalBox.classList.remove('scale-95');
+            modalBox.classList.add('scale-100');
+          }, 10);
+        });
+      });
+
+      function closeModal() {
+        modal.classList.add('opacity-0');
+        modalBox.classList.remove('scale-100');
+        modalBox.classList.add('scale-95');
+        setTimeout(() => {
+          modal.classList.add('hidden');
+        }, 200);
+      }
+
+      closeBtn.addEventListener('click', closeModal);
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+      });
+
+      // Back navigation feedback
+      document.getElementById('btn-back').addEventListener('click', () => {
+        window.history.length > 1 ? window.history.back() : alert("Navegar hacia atrás.");
+      });
+    });
+  </script>
+</body></html>

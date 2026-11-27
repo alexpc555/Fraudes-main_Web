@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}Acceso a configuración{% endblock %}
+{% block content %}
+<section role="alert" class="mx-auto max-w-xl space-y-4 rounded-2xl border border-red-300 bg-red-50 p-6">
+  <h1 class="text-2xl font-extrabold text-red-900">No puedes hacer cambios</h1>
+  <p class="text-lg leading-relaxed text-red-900">Tu cuenta no tiene autorización para configurar el dispositivo de este Adulto mayor. Pide al administrador que registre y autorice la relación Familiar–Adulto mayor.</p>
+  <a href="{% url 'administrar_llamadas' %}" class="inline-flex min-h-12 items-center rounded-xl bg-brand-header px-5 py-3 font-bold text-white">Volver al panel</a>
+</section>
+{% endblock %}

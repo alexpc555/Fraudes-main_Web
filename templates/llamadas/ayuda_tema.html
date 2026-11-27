@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}{{ tema.titulo }} · Ayuda{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-xl space-y-4 pb-4">
+  <nav aria-label="Navegación de ayuda" class="flex flex-wrap gap-2">
+    <a href="{% url 'ayuda' %}{% if volver %}?volver={{ volver|urlencode }}{% endif %}" class="inline-flex min-h-14 flex-1 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 text-base font-bold text-brand-header">← Regresar a temas</a>
+    <a href="{{ volver }}" class="inline-flex min-h-14 flex-1 items-center justify-center rounded-xl bg-brand-header px-4 text-base font-bold text-white">Salir de Ayuda</a>
+  </nav>
+  <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <p class="text-sm font-bold uppercase tracking-wide text-brand-header">Ayuda</p>
+    <h1 class="mt-1 text-2xl font-extrabold text-slate-900">{{ tema.titulo }}</h1>
+    <p class="mt-2 text-base leading-relaxed text-slate-700">{{ tema.resumen }}</p>
+    <ol class="mt-4 space-y-3">
+      {% for instruccion in tema.pasos %}
+        <li class="flex gap-3 rounded-xl bg-slate-50 p-4">
+          <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-header text-base font-bold text-white">{{ forloop.counter }}</span>
+          <span class="pt-1 text-base leading-relaxed text-slate-800">{{ instruccion }}</span>
+        </li>
+      {% endfor %}
+    </ol>
+  </article>
+  <h2 class="px-1 text-lg font-bold text-slate-900">Otros temas</h2>
+  <nav aria-label="Otros temas de ayuda" class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+    {% for otro in temas %}
+      {% if otro.slug != tema.slug %}
+        <a href="{% url 'ayuda_tema' tema=otro.slug %}{% if volver %}?volver={{ volver|urlencode }}{% endif %}" class="flex min-h-14 items-center rounded-xl border border-slate-200 bg-white p-3 text-base font-semibold text-brand-navy">{{ otro.titulo }}</a>
+      {% endif %}
+    {% endfor %}
+  </nav>
+</section>
+{% endblock %}

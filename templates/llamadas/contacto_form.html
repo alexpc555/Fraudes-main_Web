@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-xl space-y-4">
+  <a href="{% url 'lista_contactos' %}" class="inline-flex min-h-12 items-center text-base font-bold text-brand-header" aria-label="Volver a contactos de confianza">← Volver a contactos de confianza</a>
+  <h1 class="text-2xl font-extrabold text-brand-navy">{{ titulo }}</h1>
+  <a href="{% url 'ayuda_tema' tema='contactos' %}?volver={{ request.get_full_path|urlencode }}" class="inline-flex min-h-12 items-center text-base font-bold text-brand-header">Ayuda sobre contactos</a>
+  <form method="post" class="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    {% csrf_token %}
+    {% if form.non_field_errors %}<div role="alert" class="rounded-xl bg-red-50 p-3 text-base text-red-800">{{ form.non_field_errors }}</div>{% endif %}
+    {% for field in form %}
+      <div class="space-y-1">
+        {% if field.field.widget.input_type == 'checkbox' %}
+          <label for="{{ field.id_for_label }}" class="flex min-h-12 items-center gap-3 text-base font-bold text-slate-800">{{ field }}{{ field.label }}</label>
+        {% else %}
+          <label for="{{ field.id_for_label }}" class="block text-base font-bold text-slate-800">{{ field.label }}</label>
+          {{ field }}
+        {% endif %}
+        {% if field.errors %}<p role="alert" class="text-sm font-semibold text-red-700">{{ field.errors|join:' ' }}</p>{% endif %}
+      </div>
+    {% endfor %}
+    <div class="grid grid-cols-2 gap-3 pt-2">
+      <button type="submit" class="min-h-14 rounded-xl bg-brand-header px-4 text-base font-bold text-white">Guardar</button>
+      <a href="{% url 'lista_contactos' %}" class="flex min-h-14 items-center justify-center rounded-xl border border-slate-300 px-4 text-base font-bold text-slate-800">Cancelar y volver</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}Números seguros{% endblock %}
+
+{% block content %}
+<section class="mx-auto max-w-2xl space-y-5">
+  <header class="space-y-2">
+    <p class="text-sm font-bold uppercase tracking-wide text-emerald-700">Agenda de confianza</p>
+    <div class="flex items-start justify-between gap-3">
+      <div class="min-w-0">
+        <h1 class="text-2xl font-extrabold tracking-tight text-brand-navy">Números seguros</h1>
+        <p class="mt-1 text-base leading-6 text-slate-600">Personas conocidas que la aplicación puede identificar.</p>
+      </div>
+      {% if configuracion_url %}<a href="{{ configuracion_url }}?paso=contactos" class="flex min-h-11 shrink-0 items-center rounded-xl border border-slate-300 bg-white px-3 text-sm font-bold text-brand-header">Configuración</a>{% endif %}
+    </div>
+  </header>
+
+  <div class="grid grid-cols-2 gap-3" aria-label="Resumen de la agenda">
+    <div class="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+      <p class="text-sm font-semibold text-slate-500">Contactos</p>
+      <p class="mt-1 text-2xl font-extrabold text-brand-navy">{{ cantidad_contactos }}</p>
+    </div>
+    <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-3">
+      <p class="text-sm font-semibold text-emerald-800">Activos</p>
+      <p class="mt-1 text-2xl font-extrabold text-emerald-900">{{ cantidad_activos }}</p>
+    </div>
+  </div>
+
+  <a href="{% url 'contacto_crear' %}" class="flex min-h-14 w-full items-center justify-center gap-2 rounded-2xl bg-brand-header px-4 text-base font-extrabold text-white shadow-sm hover:bg-brand-dark focus:outline-none focus:ring-2 focus:ring-brand-accent focus:ring-offset-2">
+    <span aria-hidden="true" class="text-2xl leading-none">+</span> Agregar contacto seguro
+  </a>
+
+  <form method="get" class="space-y-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+    <label for="q" class="block text-base font-bold text-slate-800">Buscar contacto</label>
+    <input id="q" type="search" name="q" value="{{ busqueda }}" class="min-h-12 w-full rounded-xl border border-slate-300 px-4 text-base text-slate-900 placeholder:text-slate-400 focus:border-brand-accent focus:ring-brand-accent" placeholder="Nombre o teléfono">
+    <div class="grid grid-cols-2 gap-3">
+      <button type="submit" class="min-h-12 rounded-xl bg-brand-navy px-4 text-base font-bold text-white">Buscar</button>
+      <a href="{% url 'lista_contactos' %}" class="flex min-h-12 items-center justify-center rounded-xl border border-slate-300 px-4 text-base font-bold text-slate-700">Limpiar</a>
+    </div>
+  </form>
+
+  <div class="flex items-center justify-between gap-3 px-1">
+    <h2 class="text-lg font-extrabold text-slate-900">{% if busqueda %}Resultados{% else %}Tu agenda{% endif %}</h2>
+    <a href="{% url 'ayuda_tema' tema='contactos' %}?volver={{ request.get_full_path|urlencode }}" class="inline-flex min-h-11 items-center text-sm font-bold text-brand-header">Ayuda</a>
+  </div>
+
+  <div class="space-y-3">
+    {% for contacto in contactos %}
+      <article class="space-y-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div class="flex min-w-0 items-start gap-3">
+          <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-emerald-100 text-lg font-extrabold text-emerald-900" aria-hidden="true">{{ contacto.nombre|slice:':2'|upper }}</div>
+          <div class="min-w-0 flex-1">
+            <div class="flex flex-wrap items-center gap-2">
+              <h3 class="break-words text-lg font-extrabold leading-tight text-slate-900">{{ contacto.nombre }}</h3>
+              {% if contacto.activo %}<span class="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-extrabold text-emerald-900">Activo</span>{% else %}<span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-extrabold text-slate-700">Inactivo</span>{% endif %}
+            </div>
+            <a href="tel:{{ contacto.numero_telefonico }}" class="mt-1 block break-all text-lg font-bold tracking-wide text-brand-header">{{ contacto.numero_telefonico }}</a>
+            {% if contacto.relacion %}<p class="mt-1 text-sm text-slate-600">{{ contacto.relacion }}</p>{% endif %}
+            {% if contacto.descripcion %}<p class="mt-1 break-words text-sm leading-5 text-slate-500">{{ contacto.descripcion }}</p>{% endif %}
+          </div>
+        </div>
+        <div class="grid grid-cols-3 gap-2 border-t border-slate-100 pt-3">
+          <a href="{% url 'contacto_editar' contacto.pk %}" class="flex min-h-12 items-center justify-center rounded-xl border border-brand-header px-2 text-sm font-bold text-brand-header">Editar</a>
+          <form method="post" action="{% url 'contacto_toggle' contacto.pk %}">
+            {% csrf_token %}<button type="submit" class="min-h-12 w-full rounded-xl border px-2 text-sm font-bold {% if contacto.activo %}border-amber-200 bg-amber-50 text-amber-900{% else %}border-emerald-200 bg-emerald-50 text-emerald-900{% endif %}">{% if contacto.activo %}Desactivar{% else %}Activar{% endif %}</button>
+          </form>
+          <form method="post" action="{% url 'contacto_eliminar' contacto.pk %}" onsubmit="return confirm('¿Eliminar este contacto de confianza?');">
+            {% csrf_token %}<button type="submit" class="min-h-12 w-full rounded-xl border border-red-200 bg-red-50 px-2 text-sm font-bold text-red-800">Eliminar</button>
+          </form>
+        </div>
+      </article>
+    {% empty %}
+      <div class="rounded-2xl border border-dashed border-slate-300 bg-white px-5 py-8 text-center">
+        <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50 text-2xl" aria-hidden="true">☎</div>
+        <h3 class="mt-3 text-lg font-extrabold text-slate-900">{% if busqueda %}No encontramos contactos{% else %}Tu agenda está vacía{% endif %}</h3>
+        <p class="mt-1 text-base leading-6 text-slate-600">{% if busqueda %}Intenta con otro nombre o número.{% else %}Agrega a una persona de confianza para reconocer sus llamadas.{% endif %}</p>
+        {% if not busqueda %}<a href="{% url 'contacto_crear' %}" class="mt-4 inline-flex min-h-12 items-center rounded-xl bg-brand-header px-5 font-bold text-white">Agregar primer contacto</a>{% endif %}
+      </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

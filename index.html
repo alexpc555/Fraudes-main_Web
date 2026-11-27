@@ -1,0 +1,260 @@
+<!DOCTYPE html><html lang="es"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+<title>Tranquilízate - Pantalla de Inicio</title>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              header: '#00427A',
+              primary: '#0B4A82',
+              dark: '#08325B',
+              navy: '#0F3B66',
+              lightBlue: '#E8F1FA',
+              softBg: '#F3F8FC',
+              mint: '#E5F6EE',
+              mintText: '#187B57',
+              accent: '#1976D2'
+            }
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"Segoe UI"', 'Roboto', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-layout">
+    /* Dispositivo móvil y scroll suave */
+    body {
+      background-color: #E2E8F0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    /* Ocultar barra de scroll estándar en contenedor móvil */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="flex justify-center items-center min-h-screen py-0 sm:py-6">
+<!-- BEGIN: MobileDeviceContainer -->
+<main class="w-full max-w-[393px] h-[100dvh] sm:h-[844px] bg-[#F8FAFC] shadow-2xl sm:rounded-[44px] overflow-hidden flex flex-col relative border-[5px] border-slate-900 border-opacity-90">
+<!-- BEGIN: TopBarAndHeader -->
+<header class="bg-brand-header text-white pt-3 pb-4 px-6 flex flex-col justify-between shrink-0 shadow-md">
+<!-- iOS Status Bar -->
+<div class="flex justify-between items-center text-xs font-semibold tracking-tight pb-3 pt-1">
+<span class="text-sm tracking-normal font-semibold">9:41</span>
+<!-- Dynamic Island / Sensor Gap Placeholder -->
+<div class="w-24 h-4 bg-transparent"></div>
+<div class="flex items-center space-x-1.5 text-white">
+<!-- Cellular Icon -->
+<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+<path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.22 19.64 10.57 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 2c3.87 0 7 3.13 7 7 0 1.49-.47 2.88-1.27 4.02L6.98 5.27C8.12 4.47 9.51 4 12 4z" opacity="0"></path>
+<rect height="5" rx="1" width="3" x="2" y="16"></rect>
+<rect height="9" rx="1" width="3" x="7" y="12"></rect>
+<rect height="13" rx="1" width="3" x="12" y="8"></rect>
+<rect height="17" rx="1" width="3" x="17" y="4"></rect>
+</svg>
+<!-- Wifi Icon -->
+<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+<path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98C20.93 5.9 16.69 4 12 4zm0 3.5c3.62 0 6.91 1.41 9.35 3.73l-2.03 2.05C17.47 11.66 14.88 10.5 12 10.5s-5.47 1.16-7.32 2.78l-2.03-2.05C5.09 8.91 8.38 7.5 12 7.5z"></path>
+</svg>
+<!-- Battery Icon -->
+<div class="flex items-center">
+<div class="w-5 h-2.5 border border-white rounded-[3px] p-0.5 flex items-center">
+<div class="h-full w-full bg-white rounded-[1px]"></div>
+</div>
+<div class="w-0.5 h-1 bg-white rounded-r-sm ml-px"></div>
+</div>
+</div>
+</div>
+<!-- App Bar Content -->
+<div class="flex items-center justify-between mt-2">
+<h1 class="text-2xl font-bold tracking-tight text-white capitalize">inicio</h1>
+<!-- Escudo con verificación -->
+<button aria-label="Estado de protección" class="p-1 hover:opacity-80 transition-opacity" type="button">
+<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewBox="0 0 24 24">
+<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+<path d="M9 12l2 2 4-4"></path>
+</svg>
+</button>
+</div>
+</header>
+<!-- END: TopBarAndHeader -->
+<!-- BEGIN: MainContentArea -->
+<div class="flex-1 overflow-y-auto no-scrollbar px-4 pt-4 pb-6 space-y-4">
+<!-- BEGIN: HeroCard -->
+<!-- Tarjeta destacada con ilustración de adultos mayores protegidos y eslogan -->
+<section class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex items-center space-x-4" data-purpose="hero-card">
+<!-- Ilustración con adultos mayores y escudo de seguridad -->
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCrDkpZYGaLhkh4V3Bkq6qf8R_T0QEyNo-6UxwvPYbufW4fuIBUiczcX7gPjToMvd8CMP1pszU5c3w6_vZ-xUfYF0owTLvyiZnwMG_x5wLMMyPPbTkdxV4t2rnP-zq5pcWG94AOEXrokI7mpj1g47NG2Ga3yWNhcU0Djajjbw69jaKaa_P4j2zoCxJR8IO7SgeCtWsX4Z-uEUjvrtc2AsapgklpgJIqxQP9TApUAkUaCHm1Pea4MD3pUA" alt="Logo Tranquilízate" class="w-16 h-16 object-contain rounded-xl flex-shrink-0">
+<!-- Títulos de presentación -->
+<div class="flex-1 pr-1">
+<h2 class="text-2xl font-black text-brand-header tracking-tight leading-none mb-1">
+            Tranquilízate
+          </h2>
+<p class="text-xs font-semibold text-brand-header opacity-90 leading-snug">
+            Tu aliado contra<br>llamadas fraudulentas
+          </p>
+</div>
+</section>
+<!-- END: HeroCard -->
+<!-- BEGIN: WelcomeIntroBanner -->
+<section class="bg-brand-lightBlue/80 rounded-2xl p-4 border border-brand-accent/20" data-purpose="greeting-banner">
+<h3 class="text-xl font-black text-brand-dark tracking-tight leading-snug">
+          Hola
+        </h3>
+<p class="text-sm font-bold text-brand-dark opacity-90 leading-tight mt-0.5">
+          Aquí puedes protegerte de llamadas fraudulentas
+        </p>
+</section>
+<!-- END: WelcomeIntroBanner -->
+<!-- BEGIN: VoiceAgentStatusCard -->
+<!-- Banner verde que muestra el estado activo del asistente -->
+<section class="bg-brand-mint border border-emerald-200/80 rounded-2xl p-3.5 flex items-start space-x-3" data-purpose="voice-agent-status">
+<div class="mt-0.5 shrink-0 text-brand-mintText">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" viewBox="0 0 24 24">
+<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+<path d="M9 12l2 2 4-4"></path>
+</svg>
+</div>
+<div class="flex-1">
+<h4 class="text-xs font-bold text-brand-mintText tracking-wide uppercase">
+            Agente de voz activo
+          </h4>
+<p class="text-xs text-brand-mintText/90 font-medium leading-relaxed mt-0.5">
+            Tu agente atiende los números no registrados y analiza el nivel de riesgo
+          </p>
+</div>
+</section>
+<!-- END: VoiceAgentStatusCard -->
+<!-- BEGIN: NavigationActionList -->
+<!-- Opciones accesibles para adultos mayores con tipografía amplia e iconos grandes -->
+<nav class="space-y-3 pt-1" data-purpose="main-actions-menu">
+<!-- Opción 1: Configuración -->
+<button class="w-full bg-white hover:bg-slate-50 border border-slate-200 rounded-2xl p-3.5 flex items-center justify-between shadow-sm active:scale-[0.99] transition-all" type="button">
+<div class="flex items-center space-x-3.5">
+<div class="w-11 h-11 rounded-xl bg-brand-lightBlue flex items-center justify-center text-brand-header shrink-0">
+<!-- Engranaje / Configuración -->
+<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+<path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.485.485 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"></path>
+</svg>
+</div>
+<div class="text-left">
+<span class="block text-lg font-black text-brand-navy leading-tight">Configuración</span>
+<span class="block text-xs font-semibold text-slate-500">Personaliza la aplicación</span>
+</div>
+</div>
+<!-- Chevron Derecho -->
+<div class="text-brand-header">
+<svg class="w-6 h-6 stroke-[3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</button>
+<!-- Opción 2: Números seguros -->
+<button class="w-full bg-white hover:bg-slate-50 border border-slate-200 rounded-2xl p-3.5 flex items-center justify-between shadow-sm active:scale-[0.99] transition-all" type="button">
+<div class="flex items-center space-x-3.5">
+<div class="w-11 h-11 rounded-xl bg-brand-lightBlue flex items-center justify-center text-brand-header shrink-0">
+<!-- Teléfono -->
+<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+<path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"></path>
+</svg>
+</div>
+<div class="text-left">
+<span class="block text-lg font-black text-brand-navy leading-tight">Números seguros</span>
+<span class="block text-xs font-semibold text-slate-500">Tus contactos de confianza</span>
+</div>
+</div>
+<!-- Chevron Derecho -->
+<div class="text-brand-header">
+<svg class="w-6 h-6 stroke-[3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</button>
+<!-- Opción 3: Historial -->
+<button class="w-full bg-white hover:bg-slate-50 border border-slate-200 rounded-2xl p-3.5 flex items-center justify-between shadow-sm active:scale-[0.99] transition-all" type="button">
+<div class="flex items-center space-x-3.5">
+<div class="w-11 h-11 rounded-xl bg-brand-lightBlue flex items-center justify-center text-brand-header shrink-0">
+<!-- Historial / Lista con reloj -->
+<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+<path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"></path>
+<!-- Pequeño icono integrado reloj -->
+<circle cx="16.5" cy="15.5" fill="#00427A" r="4.5" stroke="#FFFFFF" stroke-width="1.5"></circle>
+<path d="M16.5 13.5v2.2l1.5.8" stroke="#FFFFFF" stroke-linecap="round" stroke-width="1.2"></path>
+</svg>
+</div>
+<div class="text-left">
+<span class="block text-lg font-black text-brand-navy leading-tight">Historial</span>
+<span class="block text-xs font-semibold text-slate-500">revisa tus llamadas y alertas</span>
+</div>
+</div>
+<!-- Chevron Derecho -->
+<div class="text-brand-header">
+<svg class="w-6 h-6 stroke-[3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</button>
+</nav>
+<!-- END: NavigationActionList -->
+<!-- BEGIN: BottomTrustBanner -->
+<!-- Banner inferior con motivo decorativo de seguridad -->
+<footer class="relative overflow-hidden bg-brand-lightBlue/60 rounded-2xl p-3.5 flex items-center space-x-3 border border-blue-100" data-purpose="security-footer-banner">
+<!-- Icono escudo con check -->
+<div class="w-10 h-10 rounded-full bg-brand-header text-white flex items-center justify-center shrink-0 z-10">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24">
+<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+<path d="M9 12l2 2 4-4"></path>
+</svg>
+</div>
+<div class="z-10">
+<p class="text-xs font-black text-brand-dark leading-snug">
+            Tu seguridad es<br>nuestra prioridad
+          </p>
+</div>
+<!-- Ilustración botánica/decorativa sutil a la derecha -->
+<div class="absolute right-0 bottom-0 pointer-events-none opacity-40">
+<svg fill="none" height="48" viewBox="0 0 60 48" width="60">
+<path d="M60 48C45 45 42 28 42 10C50 18 58 35 60 48Z" fill="#3B82F6"></path>
+<path d="M52 48C40 40 32 30 30 0C38 12 46 36 52 48Z" fill="#60A5FA"></path>
+<circle cx="56" cy="18" fill="#93C5FD" r="4"></circle>
+</svg>
+</div>
+</footer>
+<!-- END: BottomTrustBanner -->
+</div>
+<!-- END: MainContentArea -->
+<!-- BEGIN: iOSHomeIndicator -->
+<div class="py-1.5 flex justify-center shrink-0 bg-white">
+<div class="w-32 h-1 bg-slate-900 rounded-full opacity-60"></div>
+</div>
+<!-- END: iOSHomeIndicator -->
+</main>
+<!-- END: MobileDeviceContainer -->
+<script data-purpose="button-interactions">
+    // Simular pulsación táctil con feedback para todos los botones
+    document.querySelectorAll('button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Feedback visual táctil
+        btn.classList.add('ring-2', 'ring-brand-accent');
+        setTimeout(() => {
+          btn.classList.remove('ring-2', 'ring-brand-accent');
+        }, 180);
+      });
+    });
+  </script>
+
+
+</body></html>

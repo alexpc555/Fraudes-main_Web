@@ -82,3 +82,34 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'inicio_roles'
 NOTIFICACIONES_EMAIL_ACTIVAS = os.environ.get('NOTIFICACIONES_EMAIL_ACTIVAS', '').lower() in {'1', 'true', 'yes'}
+
+# Configuración para Render
+if os.environ.get("RENDER"):
+    SECRET_KEY = os.environ["SECRET_KEY"]
+    DEBUG = False
+
+    RENDER_HOST = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
+
+    if RENDER_HOST:
+        ALLOWED_HOSTS = [RENDER_HOST]
+        CSRF_TRUSTED_ORIGINS = [
+            f"https://{RENDER_HOST}"
+        ]
+
+    SECURE_PROXY_SSL_HEADER = (
+        "HTTP_X_FORWARDED_PROTO", "https"
+    )
+
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
+    MIDDLEWARE.insert(
+        1,
+        "whitenoise.middleware.WhiteNoiseMiddleware"
+    )
+
+    STATIC_ROOT = BASE_DIR / "staticfiles"
+
+    STATICFILES_DIRS = [
+        BASE_DIR / "static"
+    ] if (BASE_DIR / "static").exists() else []
